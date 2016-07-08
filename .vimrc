@@ -15,17 +15,17 @@ if !filereadable(vundle_readme)
 endif
 
 set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+" call vundle#rc()
 
 " let Vundle manage Vundle
 " required!
-Bundle 'gmarik/vundle'
+"Bundle 'gmarik/vundle'
 
 " Plugin
-Bundle 'scrooloose/syntastic'
-Bundle 'majutsushi/tagbar'
-Bundle 'godlygeek/tabular'
-Bundle 'float-tw/easyreST'
+"Bundle 'scrooloose/syntastic'
+"Bundle 'majutsushi/tagbar'
+"Bundle 'godlygeek/tabular'
+"Bundle 'float-tw/easyreST'
 
 " Plugin settting
 
