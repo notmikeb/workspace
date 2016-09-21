@@ -188,12 +188,21 @@ if has("cscope")
   endif
   set csverb
 endif
-"
+
+" Ctrl-e + c/t/g/s to do the cscope search
+" expand("<cword>") will become the word under the cursor
+" <CR> means enter button and explain the expand("...")
 nmap <C-e>s :cs find s <C-R>=expand("<cword>")<CR><CR>
 nmap <C-e>g :cs find g <C-R>=expand("<cword>")<CR><CR>
 nmap <C-e>c :cs find c <C-R>=expand("<cword>")<CR><CR>
 nmap <C-e>t :cs find t <C-R>=expand("<cword>")<CR><CR>
 nmap <C-e>e :cs find e <C-R>=expand("<cword>")<CR><CR>
 nmap <C-e>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-nmap <C-e>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+nmap <C-e>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 nmap <C-e>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+" in case of Ctrl-e has been key-mapping, use Ctrl-p + c/t/g/s to do the cscope search
+n  <C-p>c  :cs f c <C-R>=expand("<cword>")<CR><CR>
+n  <C-p>t  :cs f t <C-R>=expand("<cword>")<CR><CR>
+n  <C-p>g  :cs f g <C-R>=expand("<cword>")<CR><CR>
+n  <C-p>s  :cs f s <C-R>=expand("<cword>")<CR><CR>
+
