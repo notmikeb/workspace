@@ -1,6 +1,5 @@
 
 
-
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -15,6 +14,7 @@
 #include <linux/version.h>
 #include <asm/uaccess.h>
 
+#include <linux/delay.h>
 
 #define DRIVER_VERSION "v1.2"
 #define DRIVER_AUTHOR "Luis Claudio Gamboa Lopes <lcgamboa@yahoo.com>"
@@ -68,10 +68,30 @@ static struct mytty_serial **mytty_table;	/* initially all NULL */
 
 // new structure
 static struct tty_driver *ttydrv = 0;
+struct tty_struct *mytty =0;
+static struct tty_port tport;
+
+struct timer_list mytty_timer;
+char mybuffer[128];
+
+static int callback(void)
+{
+pr_info("%s callback data:%d\n", __FUNCTION__, mytty_timer.data);
+if( mytty && mytty->port && mytty_timer.data > 0){
+tty_insert_flip_string(mytty->port, mybuffer, mytty_timer.data);
+tty_flip_buffer_push(mytty->port);
+}
+return 0;
+}
 
 static int mytty_open(struct tty_struct *tty, struct file *file)
 {
 printk(KERN_DEBUG "%s - \n", __FUNCTION__);
+tport.tty = tty;
+tty->port = &tport;
+pr_info("tty 0x%x port 0x%x\n", tport.tty, tty->port);
+
+mytty = tty;
 return 0;
 }
 
@@ -86,7 +106,35 @@ static void mytty_close(struct tty_struct *tty, struct file *file)
 static int mytty_write(struct tty_struct *tty, const unsigned char *buffer, int count)
 {
 int retval = count;
+int min = 0;
 pr_info("%s write count:%d\n", __FUNCTION__, count);
+// put to our read buffer
+if( count > sizeof(mybuffer)){
+	min = sizeof(mybuffer);
+}else{
+	min = count;
+}
+memcpy(mybuffer, buffer, min);
+
+#if 1
+// wait around 5 second to launch the callback 
+// todo: NO semaphone 
+mytty_timer.function = callback;
+mytty_timer.data = min;
+mytty_timer.expires = jiffies + 500;
+add_timer(&mytty_timer);
+#else
+// warning cannot invoke the tty_insert_xxx inside write. it cause dump
+tty_insert_flip_string(tty->port, mybuffer, min);
+tty_flip_buffer_push(tty->port);
+#endif
+
+
+retval = min;
+msleep(20*min);
+
+
+pr_info("%s exit\n", __FUNCTION__);
 return retval;
 }
 
@@ -138,7 +186,6 @@ static struct tty_operations serial_ops = {
 //	.ioctl = mytty_ioctl,
 };
 
-static struct tty_port tport;
 
 static int __init mytty_init(void)
 {
@@ -166,10 +213,13 @@ static int __init mytty_init(void)
 
 	tty_set_operations(ttydrv, &serial_ops);
 
+	memset(&tport, 0 , sizeof(tport));
         tty_port_init(&tport);
 	tty_port_link_device(&tport, ttydrv, 0);
 
 	retval = tty_register_driver(ttydrv);
+
+	init_timer(&mytty_timer);
 	
 	if( retval){
 		pr_err("failed to register %d\n", retval);
