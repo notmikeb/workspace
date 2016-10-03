@@ -3,6 +3,10 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4 import * 
 import sys
+'''
+PyQt4 Model View Tutorial Port 03_0
+https://www.youtube.com/watch?v=EmYby3BB3Kk
+'''
 class PaletteTableModel(QtCore.QAbstractListModel):
     def __init__(self, colors=[[]], parent = None):
         QtCore.QAbstractListModel.__init__(self, parent)
@@ -13,6 +17,19 @@ class PaletteTableModel(QtCore.QAbstractListModel):
         return len(self.__colors[0])
     def flags(self, index):
         return QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+    def insertRows(self, position, rows, parent):
+        self.beginInsertRows(QtCore.QModelIndex(), position, position+rows-1)
+        #DO REMOVE HERE
+        for i in range(rows):
+            self.__colors.insert(position, QtGui.QColor("#000000"))
+
+        self.endInsertRows( )
+        return True
+
+    def removeRows(self, position, rows, parent):
+        self.beginRemoveRows()
+
+        self.endRemoveRows()
 
     def data(self, index, role):
         if role == QtCore.Qt.DisplayRole:
@@ -77,6 +94,15 @@ class PaletteListModel(QtCore.QAbstractListModel):
                 return QtCore.QString("Palette")
             else:
                 return QtCore.QString("color %1").arg(section)
+    def insertRows(self, position, rows, parent):
+        self.beginInsertRows(QtCore.QModelIndex(), position, position+rows-1)
+        #DO REMOVE HERE
+        for i in range(rows):
+            self.__colors.insert(position, QtGui.QColor("#000000"))
+
+        self.endInsertRows( )
+        return True
+
 
 if __name__ == "__main__":
   app = QtGui.QApplication(sys.argv)
@@ -107,4 +133,7 @@ if __name__ == "__main__":
   treeView.setModel(model)
   combobox.setModel(model)
   tableView.setModel(model)
+  model.insertRows(0, 5, QtCore.QModelIndex())
+
   sys.exit(app.exec_())
+
