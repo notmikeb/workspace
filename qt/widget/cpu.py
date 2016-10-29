@@ -4,7 +4,7 @@ import psutil
 
 import cpuprogress
 
-class MainClass(QtGui.QMainWindow, cpuprogress.Ui_MainWindow):
+class MainClass(QtGui.QMainWindow, cpuprogress.Ui_MainUiWindow):
     def __init__(self, parent = None):
         super(MainClass, self).__init__()
         self.setupUi(self)

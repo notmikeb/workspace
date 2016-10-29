@@ -22,13 +22,15 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(601, 113)
-        self.centralwidget = QtGui.QWidget(MainWindow)
+class Ui_MainUiWindow(object):
+    def setupUi(self, MainUiWindow):
+        MainUiWindow.setObjectName(_fromUtf8("MainUiWindow"))
+        MainUiWindow.resize(601, 113)
+        self.centralwidget = QtGui.QWidget(MainUiWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
+        self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.label = QtGui.QLabel(self.centralwidget)
         self.label.setObjectName(_fromUtf8("label"))
@@ -37,12 +39,24 @@ class Ui_MainWindow(object):
         self.progressBar.setProperty("value", 24)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.horizontalLayout.addWidget(self.progressBar)
-        MainWindow.setCentralWidget(self.centralwidget)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.label_2 = QtGui.QLabel(self.centralwidget)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.horizontalLayout_2.addWidget(self.label_2)
+        self.progressBar_2 = QtGui.QProgressBar(self.centralwidget)
+        self.progressBar_2.setProperty("value", 24)
+        self.progressBar_2.setObjectName(_fromUtf8("progressBar_2"))
+        self.horizontalLayout_2.addWidget(self.progressBar_2)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        MainUiWindow.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(MainUiWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainUiWindow)
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.label.setText(_translate("MainWindow", "CPU Usage", None))
+    def retranslateUi(self, MainUiWindow):
+        MainUiWindow.setWindowTitle(_translate("MainUiWindow", "MainWindow", None))
+        self.label.setText(_translate("MainUiWindow", "CPU Usage", None))
+        self.label_2.setText(_translate("MainUiWindow", "Usage", None))
 

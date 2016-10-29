@@ -46,7 +46,12 @@ class MainWindow(QtGui.QMainWindow):
 
         self.folder_view = QtGui.QTreeView(parent=self);
         self.folder_view.setModel(self.dirmodel)
-        self.folder_view.clicked[QtCore.QModelIndex].connect(self.clicked) 
+        
+        # 3 different ways to connect thesignal
+        #self.folder_view.clicked[QtCore.QModelIndex].connect(self.clicked)
+        self.folder_view.clicked.connect(self.clicked)
+        #self.connect(self.folder_view, QtCore.SIGNAL("clicked(QModelIndex)"), self.clicked) 
+
         # Don't show columns for size, file type, and last modified
         self.folder_view.setHeaderHidden(True)
         self.folder_view.hideColumn(1)
