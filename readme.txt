@@ -14,3 +14,6 @@ http://easwy.com/blog/archives/advanced-vim-skills-cscope/
 
 kernel
 https://www.raspberrypi.org/documentation/linux/kernel/building.md
+
+radiotray # listen radio when coding
+bash>radiotray 
