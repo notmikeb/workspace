@@ -30,24 +30,35 @@ class TreeWidget(QtGui.QTreeWidget):
          return False
 
      def moveSelection(self, parent, position):
-	# save the selected items
+         # self.selectedIndexes() is the selected QTreeWidgets' QModelIndex
+         # position type:int and position type:QTreeWidget is the target to put          
+
+         # save the selected items' persistentQindex. if we use QModelIndex, it will change after 1 moved
          selection = [QtCore.QPersistentModelIndex(i)
                       for i in self.selectedIndexes()]
-         parent_index = self.indexFromItem(parent)
+         print("{} {} {}".format(position, i, QtCore.QPersistentModelIndex(i)))
+         parent_index = self.indexFromItem(parent)  #from parent type:TreeWidgetItem to get its QModelIndex
          if parent_index in selection:
              return False
-         # save the drop location in case it gets moved
-         target = self.model().index(position, 0, parent_index).row()
+
+         # save the drop location in case it gets moved since it doesn't exist yet (no previous item)
+         target = self.model().index(position, 0, parent_index).row() # (row,column=0, index) to get the child's QModelIndex
+         print("position {} target {}".format(position, target)) # target sometimes is -1 when the row is lastone or empty
          if target < 0:
              target = position
+
          # remove the selected items
          taken = []
          for index in reversed(selection):
+             #index is a QPersistentModelIndex, we need QModelIndex. both are 1-1 mapping
+             print("index.row {} {} type(position):{}".format(index.row(), type(index), type(position)))
              item = self.itemFromIndex(QtCore.QModelIndex(index))
+             # indexFromItem vs ItemFromIndex could switch betwen WtreeItem and QModelIndex
              if item is None or item.parent() is None:
                  taken.append(self.takeTopLevelItem(index.row()))
              else:
                  taken.append(item.parent().takeChild(index.row()))
+
          # insert the selected items at their new positions
          while taken:
              if position == -1:
