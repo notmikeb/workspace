@@ -17,9 +17,13 @@ class Button(QtGui.QPushButton):
         super(Button, self).dragMoveEvent(event)
 
     def dropEvent(self, event):
+        accept = False
         if event.mimeData().hasUrls():
             for url in event.mimeData().urls():
-                print str(url.toLocalFile())
+                if len(str(url.toLocalFile())) > 0:
+                    print str(url.toLocalFile())
+                    self.setText( str(url.toLocalFile()))
+                    accept = True
             event.acceptProposedAction()
         else:
             super(Button,self).dropEvent(event)
@@ -30,10 +34,13 @@ class MyWindow(QtGui.QWidget):
         self.setGeometry(100,100,300,400)
         self.setWindowTitle("Filenames")
 
+        self.lbl = QtGui.QLabel()
+        self.lbl.setText("Drag a local path to the button to Change window title !")
         self.btn = Button(self)
         self.btn.setGeometry(QtCore.QRect(90, 90, 61, 51))
         self.btn.setText("Change Me!")
         layout = QtGui.QVBoxLayout(self)
+        layout.addWidget(self.lbl)
         layout.addWidget(self.btn)
 
         self.setLayout(layout)

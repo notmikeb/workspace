@@ -1,8 +1,9 @@
-from PyQt4 import QtGui, QtCore
 import sys
-import psutil 
+
+from PyQt4 import QtGui, QtCore
 
 import cpuprogress
+
 
 class MainClass(QtGui.QMainWindow, cpuprogress.Ui_MainUiWindow):
     def __init__(self, parent = None):
