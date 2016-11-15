@@ -2,6 +2,8 @@ from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QHBoxLayout
 from PyQt4.QtGui import QWidget
 
+# http://rowinggolfer.blogspot.tw/2010/08/qtextedit-with-autocompletion-using.html
+
 STARTTEXT = ('This TextEdit provides autocompletions for words that have ' +
 'more than 3 characters.\nYou can trigger autocompletion using %s\n\n'''% (
 QtGui.QKeySequence("Ctrl+E").toString(QtGui.QKeySequence.NativeText)))
