@@ -83,6 +83,9 @@ class CompletionTextEdit(QtGui.QTextEdit):
             print self.textLineUnderCursor
             self.neighbor.setText(self.textLineUnderCursor)
             self.preLineNo = currentLineNo
+            x = self.textCursor().blockNumber()+1
+            y = self.textCursor().columnNumber()+1
+            print(x, y)
 
     def keyPressEvent(self, event):
         if self.completer and self.completer.popup().isVisible():
