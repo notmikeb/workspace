@@ -26,6 +26,7 @@ class Window(QtGui.QDialog):
     def setLineFormat(self, lineNumber, format):
         cursor = QTextCursor(self.editor.document().findBlockByNumber(lineNumber))
         cursor.setBlockFormat(format)
+        self.editor.setTextCursor(cursor)
 
         # with
     def setFormat(self):
