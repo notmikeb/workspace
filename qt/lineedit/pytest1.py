@@ -1,5 +1,6 @@
 import sys
 import os.path as op
+from os.path import isdir
 
 from PyQt4 import QtGui as QtWidgets
 from PyQt4 import QtCore, QtGui
@@ -143,7 +144,10 @@ class PathInput(LineEditWithToolButtons):
         # ok for now, but we should find a different approach someday
         # Check
         text = self.text()
-        dir = cleanpath(text)
+        if 'cleanpath' in globals().keys():
+          dir = cleanpath(text)
+        else:
+          dir = ''
         isvalid = text and isdir(dir) and op.isabs(dir)
         # Apply styling
         ss = self.styleSheet().replace('font-style:italic; ', '')
@@ -169,7 +173,7 @@ class PathInput(LineEditWithToolButtons):
     
     def onTextEdited(self, dummy=None):
         text = self.text()
-        if self.checkValid():            
+        if self.checkValid() and 'cleanpath' in globals().keys():            
             self.dirChanged.emit(cleanpath(text))
     
     
@@ -179,8 +183,10 @@ class PathInput(LineEditWithToolButtons):
         """
         if event is not None:
             QtWidgets.QLineEdit.focusOutEvent(self, event)
-        
-        path = self.parent()._tree.path()
+        if self.parent():
+            path = self.parent()._tree.path()
+        else:
+            path = ''
         self.setPath(path)
 
 if __name__ == "__main__":
