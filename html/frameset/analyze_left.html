@@ -1,0 +1,40 @@
+<html>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+<script type="text/javascript">
+var openfolder = function(newurl){
+console.log(newurl);
+console.log("Url  ="+document.location);
+console.log("PathName  ="+ window.location.pathname);// Returns path only
+console.log("url  ="+window.location.href);// Returns full URL
+//Use window.location.href to get the complete URL.
+//Use window.location.pathname to get URL leaving the host.
+window.open(newurl, 'dynamic');
+}
+
+function openurl(newurl)
+{
+     window.open(newurl,'dynamic');
+     $('#test1').text(  "123" ); // from jquery
+     
+     document.getElementById('test2').innerHTML= newurl ;  // standard javascript
+}
+
+</script>
+<body>
+<div id="test1"></div>
+<div id="test2"></div>
+<li><a href="http://icrt.com/" target="dynamic">kimo</a>
+<li><a href="file://c://" target="dynamic">google</a>
+<li><a href="file:///C:/Users/dalone/" target="dynamic">google</a>
+<li><a href="file://./Desktop/" target="dynamic">google</a>
+<li><a href="file://localhost/c:/Users/" target="dynamic">google</a>
+<li><a href="analyze_left.html" target="dynamic">local</a>
+<li><a href="analyze_left.html" target="_explorer.exe">local</a>
+<li><a href="javascript:openfolder('Videos')" target="dynamic">Videos</a>
+<li><a href="javascript:openfolder('a')" target="dynamic">a</a>
+<li><a href="javascript:openurl('Videos')" target="dynamic">openurl ( Videos )</a>
+<li><a href="javascript:document.getElementsByTagName('frame')[1].src = 'file://localhost/c:/'">change to c:</a>
+<li><a href="" onclick="javascript:window.parent.frames['dynamic'].location = 'file://localhost/c:/'" target="dynamic">change to c:</a>
+
+</body>
+</html>
