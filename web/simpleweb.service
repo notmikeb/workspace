@@ -1,0 +1,15 @@
+[Unit]
+Description=Simple HTTP Service by python
+
+[Service]
+#Type=simple
+#Type=forking
+Environment="PATH=/home/pi/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+ExecStart=/usr/bin/python -m SimpleHTTPServer
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/git_home/workspace/web
+
+[Install]
+#WantedBy=multi-user.target
+WantedBy=default.target
