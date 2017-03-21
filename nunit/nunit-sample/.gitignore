@@ -1,0 +1,19 @@
+# Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
+bin
+obj
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.exe
+*.dll
+*~
+TestResult.xml
+
+# mstest test results
+TestResults
+
+packages
+
+tools
+!tools/packages.config
