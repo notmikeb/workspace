@@ -1,0 +1,22 @@
+Changelog for PyUnitGui
+
+21.05.2007: Version 0.3: Migrated all windowing to new wxWindows v2.8.1, and now it should 
+  work with all new wxWindows(wxWidgets) versions >=2.6.
+  Related bugfixes:
+  Fixed: crashing bug in ColorGauge: wx.lib.fancytext.getExtent() now returns x,y tuple
+  Fixed: DeprecationWarning (switch to the wx package from wxPython)
+  Added: remember window position, load/save at start/exit
+  Fixed: in Exit call self.Close() brings to recursion, replaced with self.Destroy()
+19.12.2006: Version 0.2: Now this becames even more useful tool: almost production
+  Extended the tool as it is extensively used for development:
+  Fixed: gauge and tree colors displaying test state are showed correctly at tests end;
+  Fixed: same during tests
+  Added: ability to run separate tests.
+06.12.2006: Version 0.1: This is now a useful tool:
+  Fixed: serious bug preventing to load python test files from outer to PyUnitGui directories.
+  Started use it for multiple real projects testing.
+08.10.2005: First release. From About Box: "PyUnitGui v0.0: This is a try."
+  All planned features are implemented and code is submitted to http://pyunitgui.sourceforge.net
+  Written under windows, but should work with minimal changes on other Python/wxPython platforms
+  Requirements: Python v2.3 and wxPython 2.4.2.4 (At least: written on, was not tested on other
+   wxWindows versions)

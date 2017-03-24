@@ -1,0 +1,23 @@
+Release Notes pyunitgui v0.3 
+
+Version 0.3: migrated to new wxWindows branch
+Now works with wxWindows >=2.5.1
+
+"Projects" menu is still non-functional. Does anybody need it now?
+
+
+  Installation
+
+You will need Python version 2.4+ and wxPython version 2.6+
+
+ Python page: 
+http://python.org/
+ wxPython page:
+http://wxpython.org/
+ wxPython download:
+http://wxpython.org/download.php
+
+After you have them both installed, unpack pyunitgui.zip (or tar.gz)
+into some directory, and run pyunitgui.pyw.
+
+If there problems arose please write me at a_minas<at>web.am
