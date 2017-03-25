@@ -19,33 +19,6 @@ import unittest,ututil,traceback
 import Config
 from   ColorGauge import ColorGauge
 
-import logging
-import logging.config
-
-class CustomTraceLogger(logging.StreamHandler):
-    def __init__(self):
-	    logging.StreamHandler.__init__(self)
-
-    def emit(self, record):
-		msg = self.format(record)
-		print record
-		if record.levelname == "ERROR":
-			print "error: " + msg
-		elif record.levelname == "INFO":
-			print "info: " + msg
-		elif record.levelname == "WARNING":
-			print "warning: " + msg
-		else:
-			print "warning: " + msg			
-		
-		
-logging.getLogger().setLevel(logging.DEBUG)
-logging.getLogger().addHandler(CustomTraceLogger())		
-
-logging.getLogger("unittest").setLevel(logging.DEBUG)
-logging.getLogger("uniitest").addHandler(CustomTraceLogger())		
-
-
 progname = 'PyUnitGui'
 projfile = 'Newtest'
 
@@ -123,13 +96,6 @@ class MainWindow(wx.Frame):
 		wx.EVT_BUTTON(dlgFrame, 401, self.OnBtnRun)
 		self.btnStop = wx.Button(dlgFrame, 402, "Stop", wx.DLG_PNT(dlgFrame, 82, 10))
 		wx.EVT_BUTTON(dlgFrame, 402, self.OnBtnStop)
-
-		# Change node's color directly for testing
-		self.btnGreen = wx.Button(dlgFrame, 403, "Green", wx.DLG_PNT(dlgFrame, 142, 10))
-		wx.EVT_BUTTON(dlgFrame, 403, self.OnBtnGreen)
-		self.btnRed = wx.Button(dlgFrame, 404, "Red", wx.DLG_PNT(dlgFrame, 202, 10))
-		wx.EVT_BUTTON(dlgFrame, 404, self.OnBtnRed)
-		
 		
 		self.gauge = ColorGauge(dlgFrame, -1, (12, 50), wx.Size(250, 25))
 		self.gauge.setColor("GREEN")
@@ -205,12 +171,6 @@ class MainWindow(wx.Frame):
 
 		self.il = wx.ImageList(16,15)
 		bmlist = BitmapsLoader().load("tb/iconTree%s.bmp",4)
-		"""bmlist = [
-		wx.Bitmap("tb/iconTree1.bmp", wx.BITMAP_TYPE_BMP),
-		wx.Bitmap("tb/iconTree2.bmp", wx.BITMAP_TYPE_BMP),
-		wx.Bitmap("tb/iconTree3.bmp", wx.BITMAP_TYPE_BMP),
-		wx.Bitmap("tb/iconTree4.bmp", wx.BITMAP_TYPE_BMP),
-		]"""
 		self.TiNeutralId = self.il.Add(bmlist[0]) # id tree icon white
 		self.TiYellowId= self.il.Add(bmlist[1])
 		self.TiRedId   = self.il.Add(bmlist[2])
@@ -223,7 +183,7 @@ class MainWindow(wx.Frame):
 			wx.TE_MULTILINE|wx.TE_READONLY) # ID_TEXTCTRL_QR, 
 
 	def makeErrorsPanel(self, parentNotebook):
-		splitter = wx.SplitterWindow(parentNotebook, -1, style=  wx.SP_3D 
+		splitter = wx.SplitterWindow(parentNotebook, -1, style= wx.NO_3D | wx.SP_3D 
 		 | wx.SP_LIVE_UPDATE)
 		splitter.SetMinimumPaneSize(20)
 		tID = wx.NewId()
@@ -312,16 +272,6 @@ class MainWindow(wx.Frame):
 	def OnBtnStop(self, event):
 		print "OnBtnStop()"
 
-	def OnBtnGreen(self, event):
-		item=self.tree.GetSelection()
-		self.setTreeItemColor(item,self.TiGreenId)
-		print "OnBtnGreen"
-
-	def OnBtnRed(self, event):
-		item=self.tree.GetSelection()
-		self.setTreeItemColor(item,self.TiRedId)
-		print "OnBtnRed"
-		
 	def OnFileReload(self,event): 
 		print "ToBeImplemented: OnFileReload"
 		self.consoleText.SetValue("")
@@ -588,7 +538,6 @@ class MainWindow(wx.Frame):
 			sys.path.append(pydir)
 
 		tc_list = ututil.load_tests(files=[path])
-		print "tc_list :" + repr(tc_list)
 		self.loadTreeTests(pyfilename,tc_list)
 		self.path=path
 		if not tc_list:
@@ -727,8 +676,6 @@ class MainWindow(wx.Frame):
 		return ok
 
 	def setTreeItemColor(self,item,color):
-		print "setTreeItemColor", color
-		color = color + 1
 		self.tree.SetItemImage(item,color, wx.TreeItemIcon_Normal)
 		self.tree.SetItemImage(item,color, wx.TreeItemIcon_Selected)
 		self.tree.Refresh()
