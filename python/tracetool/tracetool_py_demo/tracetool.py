@@ -29,6 +29,8 @@ import inspect
 from sys import version_info
 import platform
 
+isDebug = False
+
 try:
     import queue as Queue         #IGNORE:F0401   # python 3
 except Exception as importError:  #IGNORE:W0703
@@ -2983,6 +2985,8 @@ class TTrace(object):
                 
             if _Internals.pyVersion <= 2:   
                 cmdIndex = 0
+                if isDebug == True:
+                     print ("commands: " , len(commands) ," ", [i for i in commands[0]] )
                 for cmd in commands:
                     #Check if the command don't contains bad chars.
                     try:
@@ -3052,8 +3056,10 @@ class TTrace(object):
                     if TTrace.options.useThread:
                         th= _SocketThread()
                         th.start()                    
-
-
+                if isDebug == True:
+                    print "bei:" + str(len(buf))
+                    for i in range(len(buf)):
+                        print "day:" + str(buf[i])
                 if TTrace.options.useThread:
                     #print ("before put to queue") 
                     _Internals.queue.put(buf) 
