@@ -1,192 +1,235 @@
-# -*- coding: utf-8 -*-
+import sys
 
-# Form implementation generated from reading ui file 'btdaycase.ui'
-#
-# Created by: PyQt4 UI code generator 4.11.4
-#
-# WARNING! All changes made in this file will be lost!
+from PyQt4 import QtGui, QtCore
+import btdaycase_ui
+import logging
+import tracelogging
 
-from PyQt4 import QtCore, QtGui
+import datetime
+import sys
+import random
 
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
+class BtCommand():
+    def __init__(self, name = "Unknown"):
+        self.name = name
+    def setData(self, data):
+        self.data = data
+    def getData(self):
+        return self.data
 
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+class HciCommand(BtCommand):
+    def __init__(self, name = "Unknown"):
+        super(HciCommand, self).__init__("hci_" + name)
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(993, 682)
-        self.centralwidget = QtGui.QWidget(MainWindow)
-        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.centralwidget)
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.splitter_4 = QtGui.QSplitter(self.centralwidget)
-        self.splitter_4.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter_4.setObjectName(_fromUtf8("splitter_4"))
-        self.frame_2 = QtGui.QFrame(self.splitter_4)
-        self.frame_2.setMinimumSize(QtCore.QSize(50, 0))
-        self.frame_2.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame_2.setObjectName(_fromUtf8("frame_2"))
-        self.verticalLayout_5 = QtGui.QVBoxLayout(self.frame_2)
-        self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
-        self.widget = QtGui.QWidget(self.frame_2)
-        self.widget.setMinimumSize(QtCore.QSize(33, 0))
-        self.widget.setObjectName(_fromUtf8("widget"))
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.widget)
-        self.verticalLayout_2.setMargin(0)
-        self.verticalLayout_2.setSpacing(0)
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.splitter = QtGui.QSplitter(self.widget)
-        self.splitter.setOrientation(QtCore.Qt.Vertical)
-        self.splitter.setObjectName(_fromUtf8("splitter"))
-        self.list1 = QtGui.QListWidget(self.splitter)
-        self.list1.setMinimumSize(QtCore.QSize(44, 44))
-        self.list1.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.list1.setFont(font)
-        self.list1.setModelColumn(0)
-        self.list1.setObjectName(_fromUtf8("list1"))
-        self.tree1 = QtGui.QTreeWidget(self.splitter)
-        self.tree1.setMinimumSize(QtCore.QSize(44, 44))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.tree1.setFont(font)
-        self.tree1.setObjectName(_fromUtf8("tree1"))
-        self.tree1.headerItem().setText(0, _fromUtf8("1"))
-        self.verticalLayout_2.addWidget(self.splitter)
-        self.verticalLayout_5.addWidget(self.widget)
-        self.frame = QtGui.QFrame(self.splitter_4)
-        self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame.setObjectName(_fromUtf8("frame"))
-        self.verticalLayout_6 = QtGui.QVBoxLayout(self.frame)
-        self.verticalLayout_6.setMargin(0)
-        self.verticalLayout_6.setSpacing(0)
-        self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
-        self.widget_3 = QtGui.QWidget(self.frame)
-        self.widget_3.setObjectName(_fromUtf8("widget_3"))
-        self.horizontalLayout_3 = QtGui.QHBoxLayout(self.widget_3)
-        self.horizontalLayout_3.setMargin(0)
-        self.horizontalLayout_3.setSpacing(0)
-        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
-        self.splitter_2 = QtGui.QSplitter(self.widget_3)
-        self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter_2.setObjectName(_fromUtf8("splitter_2"))
-        self.frame_4 = QtGui.QFrame(self.splitter_2)
-        self.frame_4.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame_4.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame_4.setObjectName(_fromUtf8("frame_4"))
-        self.verticalLayout_3 = QtGui.QVBoxLayout(self.frame_4)
-        self.verticalLayout_3.setMargin(0)
-        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
-        self.groupBox = QtGui.QGroupBox(self.frame_4)
-        self.groupBox.setTitle(_fromUtf8(""))
-        self.groupBox.setObjectName(_fromUtf8("groupBox"))
-        self.verticalLayout = QtGui.QVBoxLayout(self.groupBox)
-        self.verticalLayout.setMargin(0)
-        self.verticalLayout.setSpacing(0)
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.widget_2 = QtGui.QWidget(self.groupBox)
-        self.widget_2.setObjectName(_fromUtf8("widget_2"))
-        self.horizontalLayout = QtGui.QHBoxLayout(self.widget_2)
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.tbnUp = QtGui.QToolButton(self.widget_2)
-        self.tbnUp.setMinimumSize(QtCore.QSize(10, 10))
-        self.tbnUp.setObjectName(_fromUtf8("tbnUp"))
-        self.horizontalLayout.addWidget(self.tbnUp)
-        self.tbnDown = QtGui.QToolButton(self.widget_2)
-        self.tbnDown.setMinimumSize(QtCore.QSize(10, 10))
-        self.tbnDown.setObjectName(_fromUtf8("tbnDown"))
-        self.horizontalLayout.addWidget(self.tbnDown)
-        self.tbnLeft = QtGui.QToolButton(self.widget_2)
-        self.tbnLeft.setMinimumSize(QtCore.QSize(10, 10))
-        self.tbnLeft.setObjectName(_fromUtf8("tbnLeft"))
-        self.horizontalLayout.addWidget(self.tbnLeft)
-        self.tbnRight = QtGui.QToolButton(self.widget_2)
-        self.tbnRight.setMinimumSize(QtCore.QSize(10, 10))
-        self.tbnRight.setObjectName(_fromUtf8("tbnRight"))
-        self.horizontalLayout.addWidget(self.tbnRight)
-        self.tbnAdd = QtGui.QToolButton(self.widget_2)
-        self.tbnAdd.setMinimumSize(QtCore.QSize(10, 10))
-        self.tbnAdd.setObjectName(_fromUtf8("tbnAdd"))
-        self.horizontalLayout.addWidget(self.tbnAdd)
-        self.tbnRemove = QtGui.QToolButton(self.widget_2)
-        self.tbnRemove.setMinimumSize(QtCore.QSize(10, 10))
-        self.tbnRemove.setObjectName(_fromUtf8("tbnRemove"))
-        self.horizontalLayout.addWidget(self.tbnRemove)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
-        self.verticalLayout.addWidget(self.widget_2)
-        self.tree2 = QtGui.QTreeWidget(self.groupBox)
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.tree2.setFont(font)
-        self.tree2.setObjectName(_fromUtf8("tree2"))
-        self.tree2.headerItem().setText(0, _fromUtf8("1"))
+
+# http://stackoverflow.com/questions/17697352/pyqt-implement-a-qabstracttablemodel-for-display-in-qtableview
+class MyTreeModel(QtCore.QAbstractTableModel):
+    def __init__(self, parent=None, *args):
+        super(MyTreeModel, self).__init__()
+        self.datatable = [ [1,2,3], [4,5,6]]
+
+    def update(self, dataIn):
+        logging.info( 'Updating Model')
+        self.datatable = dataIn
+        logging.info( 'Datatable : {0}'.format(self.datatable))
+
+    def rowCount(self, parent=QtCore.QModelIndex()):
+        return len(self.datatable.index)
+
+    def columnCount(self, parent=QtCore.QModelIndex()):
+        return len(self.datatable.columns.values)
+
+    def data(self, index, role=QtCore.Qt.DisplayRole):
+        if role == QtCore.Qt.DisplayRole:
+            i = index.row()
+            j = index.column()
+            return '{0}'.format(self.datatable.iget_value(i, j))
+        else:
+            return QtCore.QVariant()
+
+    def flags(self, index):
+        return QtCore.Qt.ItemIsEnabled
+
+class MyTreeWidgetItem(QtGui.QTreeWidgetItem):
+    def __init__(self, *p, **k):
+        super(MyTreeWidgetItem, self).__init__(*p, **k)
+        self.isBox = False
+    def setType(self, isBox = False):
+        self.isBox = isBox
+    def toXml(self, outStream):
+        if self.isBox:
+            # put a box element and invoke its children's toXml
+            self._toBoxXml(outStream)
+        else:
+            # put self's toDataXml
+            self._toDataXml(outStream)
+    def fromXml(self, inStream):
+        pass
+    def _toBoxXml(self, outStream):
+        pass
+    def _toDataXml(self, outStream):
+        pass
+    def _fromBoxXml(self, outStream):
+        pass
+    def _fromDataXml(self, outStream):
+        pass
+
+# http://stackoverflow.com/questions/8837950/pyqt-xml-to-qtreewidget
+class MyTree(QtGui.QTreeWidget):
+
+    def __init__(self, parent):
+        # maybe init your data here too
+        super(MyTree, self).__init__(parent)
+
+    def populate(self, data):
+        # populate the tree with QTreeWidgetItem items
+        for row in data:
+            # is attached to the root (parent) widget
+            rowItem = QtGui.QTreeWidgetItem(parent)
+            rowItem.setText(0, row)
+            for subRow in row:
+                 # is attached to the current row (rowItem) widget
+                 subRowItem = QtGui.QTreeWidgetItem(rowItem)
+                 subRowItem.setText(0, subRow)
+
+class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
+    def __init__(self, parent = None):
+        super(BtDayMainClass, self).__init__(parent)
+        self.setupUi(self)
+        logging.info("init down")
+        self.tree2 = MyTree( self.boxMiddle )
         self.verticalLayout.addWidget(self.tree2)
-        self.verticalLayout_3.addWidget(self.groupBox)
-        self.frame_3 = QtGui.QFrame(self.splitter_2)
-        self.frame_3.setMinimumSize(QtCore.QSize(50, 0))
-        self.frame_3.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame_3.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame_3.setObjectName(_fromUtf8("frame_3"))
-        self.verticalLayout_4 = QtGui.QVBoxLayout(self.frame_3)
-        self.verticalLayout_4.setMargin(0)
-        self.verticalLayout_4.setSpacing(0)
-        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
-        self.splitter_3 = QtGui.QSplitter(self.frame_3)
-        self.splitter_3.setOrientation(QtCore.Qt.Vertical)
-        self.splitter_3.setObjectName(_fromUtf8("splitter_3"))
-        self.tbl1 = QtGui.QTableView(self.splitter_3)
-        self.tbl1.setObjectName(_fromUtf8("tbl1"))
-        self.pteRaw1 = QtGui.QPlainTextEdit(self.splitter_3)
-        self.pteRaw1.setObjectName(_fromUtf8("pteRaw1"))
-        self.verticalLayout_4.addWidget(self.splitter_3)
-        self.horizontalLayout_3.addWidget(self.splitter_2)
-        self.verticalLayout_6.addWidget(self.widget_3)
-        self.horizontalLayout_2.addWidget(self.splitter_4)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 993, 21))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        self.menuFile = QtGui.QMenu(self.menubar)
-        self.menuFile.setObjectName(_fromUtf8("menuFile"))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
-        self.actionOpen = QtGui.QAction(MainWindow)
-        self.actionOpen.setObjectName(_fromUtf8("actionOpen"))
-        self.actionSave = QtGui.QAction(MainWindow)
-        self.actionSave.setObjectName(_fromUtf8("actionSave"))
-        self.menuFile.addAction(self.actionOpen)
-        self.menuFile.addAction(self.actionSave)
-        self.menubar.addAction(self.menuFile.menuAction())
+        #self.boxMiddle.addWidget(self.tree2)
+        self.tbnAdd.clicked.connect(self.addOneNode)
+        self.tbnRemove.clicked.connect(self.removeSelectedNode)
+        self.tbnLeft.clicked.connect(self.readFromXml)
+        self.tbnRight.clicked.connect(self.writeToXml)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.selectedNode = None
+        self.tree2.itemClicked.connect(self.itemClicked)
+        self.tbl1.itemChanged.connect(self.saveTable)
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.tbnUp.setText(_translate("MainWindow", "...", None))
-        self.tbnDown.setText(_translate("MainWindow", "...", None))
-        self.tbnLeft.setText(_translate("MainWindow", "...", None))
-        self.tbnRight.setText(_translate("MainWindow", "...", None))
-        self.tbnAdd.setText(_translate("MainWindow", "...", None))
-        self.tbnRemove.setText(_translate("MainWindow", "...", None))
-        self.menuFile.setTitle(_translate("MainWindow", "File", None))
-        self.actionOpen.setText(_translate("MainWindow", "Open", None))
-        self.actionSave.setText(_translate("MainWindow", "Save", None))
+        ## add one node by default
+        #self.addOneNode(None)
 
+        #test
+        #self.tbl1.setRowCount(2)
+        #self.tbl1.setColumnCount(2)
+        #btn = QtGui.QPushButton(self.tbl1)
+        #btn.setText("this")
+
+        sampleData = [['opcode', 'integer', '123','0'],['parm2', 'text', '{}'.format(random.randint(0, 100))],['parm3', 'hex', 0x1234], ['parm4', 'list', [1,2,3,4]]]
+        self.myTreeModel = MyTreeModel()
+        #self.myTreeModel.setMyData(sampleData)
+        #self.tbl1.setModel(self.myTreeModel)
+        #self.updateTable(sampleData)
+
+    def updateTable(self, node, data):
+        self.node = node
+        self.tbl1.setRowCount(len(data))
+        self.tbl1.setColumnCount(4)
+        header_lables = ["Field","Type", "Value", "Len"]
+        self.tbl1.setHorizontalHeaderLabels(QtCore.QStringList(header_lables))
+        for row,r in zip(data, range(len(data))):
+            if len(row) > 0:
+                self.tbl1.setItem(r, 0, QtGui.QTableWidgetItem(row[0]))
+            if len(row) > 1:
+                self.tbl1.setItem(r, 1, QtGui.QTableWidgetItem(row[1]))
+            if len(row) > 2:
+                if row[1] == 'list':
+                    w = QtGui.QComboBox()
+                    for s in row[2]:
+                        logging.info("{}".format(s))
+                        w.addItem(QtCore.QString("{}".format(s)))
+                    self.tbl1.setCellWidget(r,2,w)
+                elif row[1] == 'button':
+                    pass
+                else:
+                    self.tbl1.setItem(r, 2, QtGui.QTableWidgetItem(row[2]))
+    def removeSelectedNode(self):
+        logging.info("removeSelectedNode columnCount:{} column:{}".format(self.tree2.columnCount(), self.tree2.currentColumn()))
+        item = self.tree2.currentItem()
+        if item != None:
+            #//http://stackoverflow.com/questions/12134069/delete-qtreewidgetitem-in-pyqt
+            if item.parent() is not None:
+                item.parent().removeChild(item)
+            else:
+                self.tree2.takeTopLevelItem(self.tree2.indexOfTopLevelItem(item))
+            self.itemClicked( self.tree2.currentItem(), None )
+        else:
+            logging.error("No any selected item")
+
+    def writeToXml(self, filename = "testplan.xml"):
+        logging.info("writeToXml {}".format(filename))
+        pass
+    def readFromXml(self, filename = "testplan.xml"):
+        logging.info("readFromXml {}".format(filename))
+        pass
+                #self.tbl1.setCellWidget()
+    def saveTable(self, item):
+        # save all data into self.node
+        if self.node:
+            data = []
+            for r in range(self.tbl1.rowCount()):
+                record = []
+                for c in range(self.tbl1.columnCount()):
+                    w = self.tbl1.item(r, c)
+                    if w:
+                        logging.info("w r {} c {} type {} text {}".format(r, c, w.type(), w.text()))
+                        record.append( str(w.text()) )
+                data.append(record)
+            t = ",".join(["-".join(i) for i in data ])
+            logging.info("data: " + t)
+            pyobj = self.node.data(1,0).toPyObject() #QVariant
+            pyobj.setData(data)
+        else:
+            logging.error("no current node !!!")
+
+    def _genOneNode(self, data = None):
+        obj = BtCommand("hci_connect")
+        if data == None:
+            obj.setData([['opcode', 'integer', '123','0'],['parm2', 'text', '{}'.format(random.randint(0, 100))],['parm3', 'hex', 0x1234]])
+        else:
+            obj.setData(data)
+        item = MyTreeWidgetItem(None, QtCore.QStringList(QtCore.QString( obj.name )))
+        item.setData(1 , 0, QtCore.QVariant(obj))
+        item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+        return item
+
+    def addOneNode(self, clicked = False):
+        data = None
+        logging.info("addOneNode {}".format(data))
+        item = self._genOneNode(data)
+        if self.tree2.currentItem() is not None:
+            self.tree2.currentItem().addChild(item)
+            self.tree2.setItemExpanded(self.tree2.currentItem(), True)
+        else:
+            self.tree2.addTopLevelItem(item)
+
+        pass
+
+    def saveAllNode(self, filename="tree.xml"):
+        pass
+    def loadAllNode(self, filename="tree.xml"):
+        pass
+
+    def moveOneNode(self, direction):
+        logging.info("hello")
+        pass
+    def itemClicked(self, a, b):
+        logging.info("{} {} {}".format(sys._getframe().f_code.co_name, repr(a), repr(b)))
+        if a != None:
+            # save a
+            self.updateTable(a, a.data(1,0).toPyObject().getData())
+
+    def test(self):
+        pass
+
+print "hello"
+if __name__ == "__main__":
+  a = QtGui.QApplication(sys.argv)
+  m = BtDayMainClass()
+  print "begin show"
+  m.show()
+  print "show done"
+  a.exec_()
