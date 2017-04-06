@@ -1,17 +1,13 @@
 import sys
 
 from PyQt4 import QtGui, QtCore
-import btdaycase_ui
+import btdaycase
 import logging
 import tracelogging
 
 import datetime
 import sys
 import random
-
-# for xml manipulate
-from lxml import etree
-from lxml import objectify
 
 class BtCommand():
     def __init__(self, name = "Unknown"):
@@ -96,7 +92,7 @@ class MyTree(QtGui.QTreeWidget):
                  subRowItem = QtGui.QTreeWidgetItem(rowItem)
                  subRowItem.setText(0, subRow)
 
-class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
+class BtDayMainClass(QtGui.QMainWindow, btdaycase.Ui_MainWindow):
     def __init__(self, parent = None):
         super(BtDayMainClass, self).__init__(parent)
         self.setupUi(self)
@@ -166,31 +162,8 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
     def writeToXml(self, filename = "testplan.xml"):
         logging.info("writeToXml {}".format(filename))
         pass
-    def readFromXml(self, clicked):
-        filename = "sample.xml"
-        for i in range(self.tree2.topLevelItemCount()):
-            self.tree2.takeTopLevelItem(0)
+    def readFromXml(self, filename = "testplan.xml"):
         logging.info("readFromXml {}".format(filename))
-        xml = "".join( open( str(filename), "r").read() )
-        def build(item, root):
-            for element in root.getchildren():
-              #print element.tag
-              if element.tag.find('}') >= 0:
-                 tag = element.tag[element.tag.find('}')+1:]
-              else:
-                 tag = element.tag
-              if tag == "TestCase":
-                #print dir(element)
-                child = self._genOneNode(None, str(element.tcName), item)
-                #child = QtGui.QTreeWidgetItem(item, [ str(element.tcName) ])
-                child.setFlags(
-                    child.flags() | QtCore.Qt.ItemIsEditable)
-                build(child, element)
-            item.setExpanded(True)
-        #root = etree.fromstring(xml)
-        root = objectify.fromstring(xml)
-        build(self.tree2.invisibleRootItem(), root)
-
         pass
                 #self.tbl1.setCellWidget()
     def saveTable(self, item):
@@ -212,15 +185,13 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         else:
             logging.error("no current node !!!")
 
-    def _genOneNode(self, data = None, name = "Unknown Name", parent = None):
-        obj = BtCommand( str(name) )
-        obj.name = name
-        obj.text = name
+    def _genOneNode(self, data = None):
+        obj = BtCommand("hci_connect")
         if data == None:
             obj.setData([['opcode', 'integer', '123','0'],['parm2', 'text', '{}'.format(random.randint(0, 100))],['parm3', 'hex', 0x1234]])
         else:
             obj.setData(data)
-        item = MyTreeWidgetItem( parent, QtCore.QStringList(QtCore.QString( name )))
+        item = MyTreeWidgetItem(None, QtCore.QStringList(QtCore.QString( obj.name )))
         item.setData(1 , 0, QtCore.QVariant(obj))
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
         return item
@@ -254,6 +225,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
     def test(self):
         pass
 
+print "hello"
 if __name__ == "__main__":
   a = QtGui.QApplication(sys.argv)
   m = BtDayMainClass()
