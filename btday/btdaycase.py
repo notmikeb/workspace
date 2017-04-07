@@ -8,10 +8,13 @@ import tracelogging
 import datetime
 import sys
 import random
+import time
 
 # for xml manipulate
 from lxml import etree
-from lxml import objectify
+#from lxml import objectify
+
+import btdayelement
 
 class BtCommand():
     def __init__(self, name = "Unknown"):
@@ -20,11 +23,12 @@ class BtCommand():
         self.data = data
     def getData(self):
         return self.data
+    def runComand(self, recursive = True):
+        logging.info("self.name {}".format(self.name))
 
 class HciCommand(BtCommand):
     def __init__(self, name = "Unknown"):
         super(HciCommand, self).__init__("hci_" + name)
-
 
 # http://stackoverflow.com/questions/17697352/pyqt-implement-a-qabstracttablemodel-for-display-in-qtableview
 class MyTreeModel(QtCore.QAbstractTableModel):
@@ -60,6 +64,8 @@ class MyTreeWidgetItem(QtGui.QTreeWidgetItem):
         self.isBox = False
     def setType(self, isBox = False):
         self.isBox = isBox
+    def runCommand(self):
+        logging.info("runCommand: {}".format(self.data(1,0).toPyObject().name))
     def toXml(self, outStream):
         if self.isBox:
             # put a box element and invoke its children's toXml
@@ -77,6 +83,9 @@ class MyTreeWidgetItem(QtGui.QTreeWidgetItem):
         pass
     def _fromDataXml(self, outStream):
         pass
+
+
+
 
 # http://stackoverflow.com/questions/8837950/pyqt-xml-to-qtreewidget
 class MyTree(QtGui.QTreeWidget):
@@ -108,31 +117,44 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         self.tbnRemove.clicked.connect(self.removeSelectedNode)
         self.tbnLeft.clicked.connect(self.readFromXml)
         self.tbnRight.clicked.connect(self.writeToXml)
+        self.tbnUp.clicked.connect(self.runAllNode)
 
         self.selectedNode = None
         self.tree2.itemClicked.connect(self.itemClicked)
+        self.tree2.itemSelectionChanged.connect(self.itemClicked)
+        self.tree2.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        runAction = QtGui.QAction("Run", self.tree2)
+        runAction.triggered.connect(self.runSelectedNode)
+        self.tree2.addAction(runAction)
+
         self.tbl1.itemChanged.connect(self.saveTable)
+        self.tbl2.itemChanged.connect(self.saveTable2)
 
-        ## add one node by default
-        #self.addOneNode(None)
-
-        #test
-        #self.tbl1.setRowCount(2)
-        #self.tbl1.setColumnCount(2)
-        #btn = QtGui.QPushButton(self.tbl1)
-        #btn.setText("this")
+        # load the xml file
+        self.readFromXml(False)
+        self.writeToXml(False)
 
         sampleData = [['opcode', 'integer', '123','0'],['parm2', 'text', '{}'.format(random.randint(0, 100))],['parm3', 'hex', 0x1234], ['parm4', 'list', [1,2,3,4]]]
         self.myTreeModel = MyTreeModel()
         #self.myTreeModel.setMyData(sampleData)
         #self.tbl1.setModel(self.myTreeModel)
-        #self.updateTable(sampleData)
+        #self.updateTable1(sampleData)
 
-    def updateTable(self, node, data):
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Enter:
+            self.itemClicked(None)
+        else:
+            super(BtDayMainClass, self).keyPressEvent(event)
+
+    def updateTable1(self, node, data):
         self.node = node
+        if data == None:
+            self.tbl1.setRowCount(0)
+            self.tbl1.setColumnCount(0)
+            return
         self.tbl1.setRowCount(len(data))
         self.tbl1.setColumnCount(4)
-        header_lables = ["Field","Type", "Value", "Len"]
+        header_lables = ["Field","Value", "Type", "Len"]
         self.tbl1.setHorizontalHeaderLabels(QtCore.QStringList(header_lables))
         for row,r in zip(data, range(len(data))):
             if len(row) > 0:
@@ -150,6 +172,35 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                     pass
                 else:
                     self.tbl1.setItem(r, 2, QtGui.QTableWidgetItem(row[2]))
+
+    def updateTable2(self, node, data):
+        self.node = node
+        #print ("updateTable2:" +repr(data))
+        if data == None:
+            self.tbl2.setRowCount(0)
+            self.tbl2.setColumnCount(0)
+            return
+        self.tbl2.setRowCount(len(data))
+        self.tbl2.setColumnCount(2)
+        header_lables = ["Field","Value"]
+        self.tbl1.setHorizontalHeaderLabels(QtCore.QStringList(header_lables))
+        for row,r in zip(data, range(len(data))):
+            if len(row) > 0:
+                self.tbl2.setItem(r, 0, QtGui.QTableWidgetItem(row[0]))
+            if len(row) > 1:
+                self.tbl2.setItem(r, 1, QtGui.QTableWidgetItem(row[1]))
+            if len(row) > 2:
+                if row[1] == 'list':
+                    w = QtGui.QComboBox()
+                    for s in row[2]:
+                        logging.info("{}".format(s))
+                        w.addItem(QtCore.QString("{}".format(s)))
+                    self.tbl1.setCellWidget(r,2,w)
+                elif row[1] == 'button':
+                    pass
+                else:
+                    self.tbl2.setItem(r, 2, QtGui.QTableWidgetItem(row[2]))
+
     def removeSelectedNode(self):
         logging.info("removeSelectedNode columnCount:{} column:{}".format(self.tree2.columnCount(), self.tree2.currentColumn()))
         item = self.tree2.currentItem()
@@ -165,7 +216,20 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
 
     def writeToXml(self, filename = "testplan.xml"):
         logging.info("writeToXml {}".format(filename))
-        pass
+        self._exportTree()
+
+    def _exportTree(self):
+        def build(item, root):
+            for row in range(item.childCount()):
+                child = item.child(row)
+                element = etree.SubElement(
+                    root, 'node', text=str(child.text(0).toUtf8()))
+                build(child, element)
+        root = etree.Element('root')
+        build(self.tree2.invisibleRootItem(), root)
+        from xml.dom import minidom
+        print(minidom.parseString(etree.tostring(root)).toprettyxml())
+
     def readFromXml(self, clicked):
         filename = "sample.xml"
         for i in range(self.tree2.topLevelItemCount()):
@@ -181,14 +245,15 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                  tag = element.tag
               if tag == "TestCase":
                 #print dir(element)
-                child = self._genOneNode(None, str(element.tcName), item)
+                #child = self._genOneNode(None, str(element.tcName), item)
                 #child = QtGui.QTreeWidgetItem(item, [ str(element.tcName) ])
+                child = self._genOneNode(element.getPropertyList().getDataList(), str(element.tcName), item, element.getFieldList())
                 child.setFlags(
                     child.flags() | QtCore.Qt.ItemIsEditable)
                 build(child, element)
             item.setExpanded(True)
         #root = etree.fromstring(xml)
-        root = objectify.fromstring(xml)
+        root = etree.XML(xml, btdayelement.parser)
         build(self.tree2.invisibleRootItem(), root)
 
         pass
@@ -206,23 +271,68 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                         record.append( str(w.text()) )
                 data.append(record)
             t = ",".join(["-".join(i) for i in data ])
-            logging.info("data: " + t)
+            logging.info("data1: " + t)
             pyobj = self.node.data(1,0).toPyObject() #QVariant
             pyobj.setData(data)
         else:
             logging.error("no current node !!!")
 
-    def _genOneNode(self, data = None, name = "Unknown Name", parent = None):
+    def saveTable2(self, item):
+        # save all data into self.node
+        if self.node:
+            data = []
+            for r in range(self.tbl2.rowCount()):
+                record = []
+                for c in range(self.tbl2.columnCount()):
+                    w = self.tbl2.item(r, c)
+                    if w:
+                        logging.info("w r {} c {} type {} text {}".format(r, c, w.type(), w.text()))
+                        record.append( str(w.text()) )
+                data.append(record)
+            t = ",".join(["-".join(i) for i in data ])
+            logging.info("data2: " + t)
+            pyobj = self.node.data(2,0).toPyObject() #QVariant
+            pyobj.setData(data)
+
+        else:
+            logging.error("no current node !!!")
+    def runAllNode(self):
+        t1 = time.time()*1000
+        logging.info("begin: {}".format(t1))
+        for i in range(self.tree2.topLevelItemCount()):
+            self.runOneNode( self.tree2.topLevelItem(i) )
+        t2 = time.time()*1000
+        logging.info("end: {}".format(t2-t1))
+
+    def runSelectedNode(self, selected = None):
+        item = self.tree2.currentItem()
+        self.runOneNode(item)
+
+    def runOneNode(self, item):
+        logging.info("runOneNode")
+
+        def loopRun(item):
+            t1 = time.time()*1000
+            logging.info("begin: {}".format(t1))
+            item.runCommand()
+            for i in range(item.childCount()):
+                loopRun(item.child(i))
+            t2 = time.time()*1000
+            logging.info("end: {}".format(t2-t1))
+        loopRun(item)
+
+    def _genOneNode(self, data = None, name = "Unknown Name", parent = None, field = None):
         obj = BtCommand( str(name) )
         obj.name = name
         obj.text = name
-        if data == None:
-            obj.setData([['opcode', 'integer', '123','0'],['parm2', 'text', '{}'.format(random.randint(0, 100))],['parm3', 'hex', 0x1234]])
-        else:
-            obj.setData(data)
+        obj.setData(data)
+        obj2 = BtCommand( str(name) )
+        obj2.setData(field)
         item = MyTreeWidgetItem( parent, QtCore.QStringList(QtCore.QString( name )))
         item.setData(1 , 0, QtCore.QVariant(obj))
+        item.setData(2 , 0, QtCore.QVariant(obj2))
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
         return item
 
     def addOneNode(self, clicked = False):
@@ -245,11 +355,13 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
     def moveOneNode(self, direction):
         logging.info("hello")
         pass
-    def itemClicked(self, a, b):
+    def itemClicked(self, a =None, b = None):
         logging.info("{} {} {}".format(sys._getframe().f_code.co_name, repr(a), repr(b)))
+        a = self.tree2.currentItem()
         if a != None:
             # save a
-            self.updateTable(a, a.data(1,0).toPyObject().getData())
+            self.updateTable1(a, a.data(1,0).toPyObject().getData())
+            self.updateTable2(a, a.data(2,0).toPyObject().getData())
 
     def test(self):
         pass

@@ -312,7 +312,7 @@
               <property name="frameShadow">
                <enum>QFrame::Raised</enum>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <layout class="QVBoxLayout" name="verticalLayout_4">
                <item>
                 <widget class="QSplitter" name="splitter_3">
                  <property name="orientation">
@@ -326,6 +326,7 @@
                    </sizepolicy>
                   </property>
                  </widget>
+                 <widget class="QTableWidget" name="tbl2"/>
                  <widget class="QPlainTextEdit" name="pteRaw1"/>
                 </widget>
                </item>

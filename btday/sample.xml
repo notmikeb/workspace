@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TestPlanName TestPlanName="TestPlanDaylong4" IsSeperateLog="true" DAYVersion="2.1.30.2">
+  <TestCase xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.TestPlan">
+    <isNodeChecked>true</isNodeChecked>
+    <isShowResult>true</isShowResult>
+    <methodInfoName>TestGroup</methodInfoName>
+    <tc2ndSource>DAYCORETC</tc2ndSource>
+    <tcControlTargetName>
+    </tcControlTargetName>
+    <tcName>TestGroup_UI</tcName>
+    <tcSource>ATOMTC</tcSource>
+    <typeOfTCControlTargetName>DAY.TestPlan.DAYCoreTC</typeOfTCControlTargetName>
+    <PropertyList xmlns="">
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>1</objValueString>
+        <sName>loop</sName>
+        <typeString>System.Int32</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>False</objValueString>
+        <sName>isParallel</sName>
+        <typeString>System.Boolean</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>NORMAL</objValueString>
+        <sName>tgType</sName>
+        <typeString>DAY.TestPlan.TG_Type</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>True</objValueString>
+        <sName>isShowResult</sName>
+        <typeString>System.Boolean</typeString>
+      </DynamicProperty>
+    </PropertyList>
+    <TestCase xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.TestPlan">
+      <isNodeChecked>true</isNodeChecked>
+      <isShowResult>true</isShowResult>
+      <methodInfoName>STPDownloadPatch</methodInfoName>
+      <tc2ndSource>COMBOSTA</tc2ndSource>
+      <tcControlTargetName>M1</tcControlTargetName>
+      <tcName>STPDownloadPatch</tcName>
+      <tcSource>ATOMTC</tcSource>
+      <typeOfTCControlTargetName>DAY.FrameworkCore.MobileDevice.WinSTA</typeOfTCControlTargetName>
+      <PropertyList xmlns="">
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>M1</objValueString>
+          <sName>COMBOSTA</sName>
+          <typeString>DAY.FrameworkCore.TestbedConfig.DAYDeviceListDynamicProperty</typeString>
+        </DynamicProperty>
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>1</objValueString>
+          <sName>loop</sName>
+          <typeString>System.Int32</typeString>
+        </DynamicProperty>
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>False</objValueString>
+          <sName>isParallel</sName>
+          <typeString>System.Boolean</typeString>
+        </DynamicProperty>
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>
+          </objValueString>
+          <sName>patchPath</sName>
+          <typeString>System.String</typeString>
+        </DynamicProperty>
+      </PropertyList>
+    </TestCase>
+    <TestCase xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.TestPlan">
+      <isNodeChecked>true</isNodeChecked>
+      <isShowResult>true</isShowResult>
+      <methodInfoName>BTPowerOn</methodInfoName>
+      <tc2ndSource>COMBOSTA</tc2ndSource>
+      <tcControlTargetName>M1</tcControlTargetName>
+      <tcName>BTPowerOn</tcName>
+      <tcSource>ATOMTC</tcSource>
+      <typeOfTCControlTargetName>DAY.FrameworkCore.MobileDevice.WinSTA</typeOfTCControlTargetName>
+      <PropertyList xmlns="">
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>M1</objValueString>
+          <sName>COMBOSTA</sName>
+          <typeString>DAY.FrameworkCore.TestbedConfig.DAYDeviceListDynamicProperty</typeString>
+        </DynamicProperty>
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>1</objValueString>
+          <sName>loop</sName>
+          <typeString>System.Int32</typeString>
+        </DynamicProperty>
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>False</objValueString>
+          <sName>isParallel</sName>
+          <typeString>System.Boolean</typeString>
+        </DynamicProperty>
+      </PropertyList>
+    </TestCase>
+    <TestCase xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.TestPlan">
+      <isNodeChecked>true</isNodeChecked>
+      <isShowResult>true</isShowResult>
+      <methodInfoName>TestGroup</methodInfoName>
+      <tc2ndSource>DAYCORETC</tc2ndSource>
+      <tcControlTargetName>
+      </tcControlTargetName>
+      <tcName>TestGroup</tcName>
+      <tcSource>ATOMTC</tcSource>
+      <typeOfTCControlTargetName>DAY.TestPlan.DAYCoreTC</typeOfTCControlTargetName>
+      <PropertyList xmlns="">
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>1</objValueString>
+          <sName>loop</sName>
+          <typeString>System.Int32</typeString>
+        </DynamicProperty>
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>False</objValueString>
+          <sName>isParallel</sName>
+          <typeString>System.Boolean</typeString>
+        </DynamicProperty>
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>NORMAL</objValueString>
+          <sName>tgType</sName>
+          <typeString>DAY.TestPlan.TG_Type</typeString>
+        </DynamicProperty>
+        <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+          <objValueString>True</objValueString>
+          <sName>isShowResult</sName>
+          <typeString>System.Boolean</typeString>
+        </DynamicProperty>
+      </PropertyList>
+      <TestCase xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.TestPlan">
+        <isNodeChecked>true</isNodeChecked>
+        <isShowResult>true</isShowResult>
+        <methodInfoName>STPDownloadPatch</methodInfoName>
+        <tc2ndSource>COMBOSTA</tc2ndSource>
+        <tcControlTargetName>M1</tcControlTargetName>
+        <tcName>STPDownloadPatch</tcName>
+        <tcSource>ATOMTC</tcSource>
+        <typeOfTCControlTargetName>DAY.FrameworkCore.MobileDevice.WinSTA</typeOfTCControlTargetName>
+        <PropertyList xmlns="">
+          <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+            <objValueString>M1</objValueString>
+            <sName>COMBOSTA</sName>
+            <typeString>DAY.FrameworkCore.TestbedConfig.DAYDeviceListDynamicProperty</typeString>
+          </DynamicProperty>
+          <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+            <objValueString>1</objValueString>
+            <sName>loop</sName>
+            <typeString>System.Int32</typeString>
+          </DynamicProperty>
+          <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+            <objValueString>False</objValueString>
+            <sName>isParallel</sName>
+            <typeString>System.Boolean</typeString>
+          </DynamicProperty>
+          <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+            <objValueString>
+            </objValueString>
+            <sName>patchPath</sName>
+            <typeString>System.String</typeString>
+          </DynamicProperty>
+        </PropertyList>
+      </TestCase>
+    </TestCase>
+  </TestCase>
+  <TestCase xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.TestPlan">
+    <isNodeChecked>true</isNodeChecked>
+    <isShowResult>true</isShowResult>
+    <methodInfoName>PicusEnable</methodInfoName>
+    <tc2ndSource>COMBOSTA</tc2ndSource>
+    <tcControlTargetName>M1</tcControlTargetName>
+    <tcName>PicusEnable</tcName>
+    <tcSource>ATOMTC</tcSource>
+    <typeOfTCControlTargetName>DAY.FrameworkCore.MobileDevice.WinSTA</typeOfTCControlTargetName>
+    <PropertyList xmlns="">
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>M1</objValueString>
+        <sName>COMBOSTA</sName>
+        <typeString>DAY.FrameworkCore.TestbedConfig.DAYDeviceListDynamicProperty</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>1</objValueString>
+        <sName>loop</sName>
+        <typeString>System.Int32</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>False</objValueString>
+        <sName>isParallel</sName>
+        <typeString>System.Boolean</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>PHONE</objValueString>
+        <sName>platform</sName>
+        <typeString>DAY.FrameworkCore.Common.PICUS_PLATFORM</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>ENABLE</objValueString>
+        <sName>status</sName>
+        <typeString>DAY.FrameworkCore.Common.STATUS</typeString>
+      </DynamicProperty>
+    </PropertyList>
+  </TestCase>
+  <TestCase xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.TestPlan">
+    <isNodeChecked>false</isNodeChecked>
+    <isShowResult>true</isShowResult>
+    <methodInfoName>PicusFilter</methodInfoName>
+    <tc2ndSource>COMBOSTA</tc2ndSource>
+    <tcControlTargetName>M1</tcControlTargetName>
+    <tcName>PicusFilter</tcName>
+    <tcSource>ATOMTC</tcSource>
+    <typeOfTCControlTargetName>DAY.FrameworkCore.MobileDevice.WinSTA</typeOfTCControlTargetName>
+    <PropertyList xmlns="">
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>M1</objValueString>
+        <sName>COMBOSTA</sName>
+        <typeString>DAY.FrameworkCore.TestbedConfig.DAYDeviceListDynamicProperty</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>1</objValueString>
+        <sName>loop</sName>
+        <typeString>System.Int32</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>False</objValueString>
+        <sName>isParallel</sName>
+        <typeString>System.Boolean</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 80</objValueString>
+        <sName>SYS_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 00</objValueString>
+        <sName>TIM_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 00</objValueString>
+        <sName>PKV_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 00</objValueString>
+        <sName>LC_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 00</objValueString>
+        <sName>LL_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 00</objValueString>
+        <sName>ANT_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 00</objValueString>
+        <sName>LMP_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 00</objValueString>
+        <sName>CO_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 00</objValueString>
+        <sName>VOICE_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>00 00 00 00</objValueString>
+        <sName>BAL_LOG_MSK</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+    </PropertyList>
+  </TestCase>
+  <TestCase xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.TestPlan">
+    <isNodeChecked>true</isNodeChecked>
+    <isShowResult>true</isShowResult>
+    <methodInfoName>HCISend</methodInfoName>
+    <tc2ndSource>COMBOSTA</tc2ndSource>
+    <tcControlTargetName>M1</tcControlTargetName>
+    <tcName>HCISend</tcName>
+    <tcSource>ATOMTC</tcSource>
+    <typeOfTCControlTargetName>DAY.FrameworkCore.MobileDevice.WinSTA</typeOfTCControlTargetName>
+    <PropertyList xmlns="">
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>M1</objValueString>
+        <sName>COMBOSTA</sName>
+        <typeString>DAY.FrameworkCore.TestbedConfig.DAYDeviceListDynamicProperty</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>1</objValueString>
+        <sName>loop</sName>
+        <typeString>System.Int32</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>False</objValueString>
+        <sName>isParallel</sName>
+        <typeString>System.Boolean</typeString>
+      </DynamicProperty>
+      <DAY.Utilities.DynamicPropertyList NAME="parameterEditor" TYPE="DAY.TestPlan.BTConfigBehavior" />
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>01 03 0C 00</objValueString>
+        <sName>TX</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>04 0E 04 01 03 0C 00</objValueString>
+        <sName>RX</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>True</objValueString>
+        <sName>expectedPositive</sName>
+        <typeString>System.Boolean</typeString>
+      </DynamicProperty>
+      <DynamicProperty xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/DAY.Utilities">
+        <objValueString>10</objValueString>
+        <sName>timeout_sec</sName>
+        <typeString>System.String</typeString>
+      </DynamicProperty>
+    </PropertyList>
+  </TestCase>
+</TestPlanName>
