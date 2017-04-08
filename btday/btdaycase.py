@@ -14,16 +14,39 @@ import time
 from lxml import etree
 #from lxml import objectify
 
+# for drag and drop
+import cPickle
+import pickle
+
+
 import btdayelement
 from btdayelement import *
+
+logging.getLogger().setLevel(logging.INFO)
 
 class BtCommand():
     def __init__(self, name = "Unknown"):
         self.name = name
+        self.cmd = name
+        self.data = self.field = None
     def setData(self, data):
         self.data = data
     def getData(self):
         return self.data
+    def setField(self, field):
+        self.field = field
+        for row in field:
+            if isinstance(row, list):
+                if len(row) == 2 :
+                    n,v = row
+                    if n == "methodInfoName":
+                        self.cmd = v
+                else:
+                    logging.error("row len:{}".format(len(row)))
+            else:
+                logging.error("row is not a list ! {}".repr(row))
+    def getField(self):
+        return self.field
     def runComand(self, recursive = True):
         logging.info("self.name {}".format(self.name))
 
@@ -67,6 +90,18 @@ class MyTreeWidgetItem(QtGui.QTreeWidgetItem):
         self.isBox = isBox
     def runCommand(self):
         logging.info("runCommand: {}".format(self.data(1,0).toPyObject().name))
+    def getCommandDescription(self):
+        selected = self.data(1,0).toPyObject()
+        #try:
+        if selected:
+            objname = selected.name
+            cmd = selected.cmd
+            info = repr(selected.getData())
+        else:
+        #except:
+            objname = cmd = info = "None"
+        return "object = {}; object.{} {}".format(objname, cmd, info)
+
     def toXml(self, outStream):
         if self.isBox:
             # put a box element and invoke its children's toXml
@@ -118,6 +153,13 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         self.tbnRight.clicked.connect(self.writeToXml)
         self.tbnUp.clicked.connect(self.runAllNode)
 
+        # tree1 building up with atom sample
+        self.tree1.dragEnterEvent = self.tree1DragEnterEvent
+        self.tree1.startDrag = self.tree1StartDrag
+        self.tree1.mouseMoveEvent = self.tree1MouseMoveEvent
+        self._tree1BuildingUp()
+
+        # tree2 building up
         self.selectedNode = None
         self.tree2.itemClicked.connect(self.itemClicked)
         self.tree2.itemSelectionChanged.connect(self.itemClicked)
@@ -125,6 +167,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         runAction = QtGui.QAction("Run", self.tree2)
         runAction.triggered.connect(self.runSelectedNode)
         self.tree2.addAction(runAction)
+        self._tree2BuildingUp()
 
         self.tbl1.itemChanged.connect(self.saveTable)
         self.tbl2.itemChanged.connect(self.saveTable2)
@@ -139,6 +182,86 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         #self.tbl1.setModel(self.myTreeModel)
         #self.updateTable1(sampleData)
 
+    def _tree1BuildingUp(self):
+        name = "UI_Hello1"
+        item = MyTreeWidgetItem( None, QtCore.QStringList(QtCore.QString( name )))
+        obj1 = BtCommand( str(name) )
+        data = [["1", "2", "3"]]
+        field = [["tcName", "Hello1"], ["methodInfoName", "hello1.exe"]]
+        obj1.setData(data)
+        obj1.setField(field)
+        item.setData(1 , 0, QtCore.QVariant(obj1))
+        item.setData(2 , 0, QtCore.QVariant(obj1))
+        self.tree1.addTopLevelItem(item)
+
+        name = "UI_Hello2"
+        item = MyTreeWidgetItem( None, QtCore.QStringList(QtCore.QString( name )))
+        obj1 = BtCommand( str(name) )
+        data = [["a", "b", "c"] ]
+        field = [["tcName", "Hello2"], ["methodInfoName", "hello2.exe"]]
+        obj1.setData(data)
+        obj1.setField(field)
+        item.setData(1 , 0, QtCore.QVariant(obj1))
+        item.setData(2 , 0, QtCore.QVariant(obj1))
+        self.tree1.addTopLevelItem(item)
+
+    def tree1DragEnterEvent(self, event):
+        if event.mimeData().hasFormat("application/x-person"):
+            event.accept()
+        else:
+            event.ignore()
+    def tree1StartDrag(self, event):
+        print "draggableList startDrag"
+        drag = QtGui.QDrag(self)
+        selected = self.tree1.currentItem().data(1,0).toPyObject()
+        bstream = cPickle.dumps(selected)
+        mimeData = QtCore.QMimeData()
+        mimeData.setData("application/atom", bstream)
+
+        drag = QtGui.QDrag(self)
+        drag.setMimeData(mimeData)
+        result = drag.start(QtCore.Qt.MoveAction)
+
+    def tree1MouseMoveEvent(self, event):
+        self.tree1.startDrag(event)
+
+    def _tree2BuildingUp(self):
+        pass
+        self.tree2.dragEnterEvent = self.tree2DragEnterEvent
+        self.tree2.dragMoveEvent = self.tree2DragMoveEvent
+        self.tree2.dragLeaveEvent = self.tree2DragLeaveEvent
+        self.tree2.dropEvent = self.tree2DropEvent
+        self.tree2.setAcceptDrops(True)
+
+    def tree2DragEnterEvent(self, event):
+        if event.mimeData().hasFormat("application/atom"):
+            event.accept()
+        else:
+            event.ignore()
+
+    def tree2DragMoveEvent(self, event):
+        if event.mimeData().hasFormat("application/atom"):
+            #event.setDropAction(QtCore.Qt.MoveAction)
+            event.setDropAction(QtCore.Qt.CopyAction)
+            event.accept()
+        else:
+            event.ignore()
+
+    def tree2DragLeaveEvent(self, event):
+        pass
+
+    def tree2DropEvent(self, event):
+        data = event.mimeData()
+        bstream = data.retrieveData("application/atom",
+            QtCore.QVariant.ByteArray)
+        selected = pickle.loads(bstream.toByteArray())
+        logging.info("drop data is: {}".format(selected) )
+        # selected is a BTCommand object
+        parent = self.tree2.invisibleRootItem()
+        self._genOneNode(selected.getData(), str(selected.name), parent, selected.getField())
+
+        event.accept()
+
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Enter:
             self.itemClicked(None)
@@ -151,6 +274,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
             self.tbl1.setRowCount(0)
             self.tbl1.setColumnCount(0)
             return
+        self.tbl1.blockSignals(True)
         self.tbl1.setRowCount(len(data))
         self.tbl1.setColumnCount(4)
         header_lables = ["Field","Value", "Type", "Len"]
@@ -171,6 +295,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                     pass
                 else:
                     self.tbl1.setItem(r, 2, QtGui.QTableWidgetItem(row[2]))
+        self.tbl1.blockSignals(False)
 
     def updateTable2(self, node, data):
         self.node = node
@@ -178,6 +303,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
             self.tbl2.setRowCount(0)
             self.tbl2.setColumnCount(0)
             return
+        self.tbl2.blockSignals(True)
         self.tbl2.setRowCount(len(data))
         self.tbl2.setColumnCount(2)
         header_lables = ["Field","Value"]
@@ -193,11 +319,12 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                     for s in row[2]:
                         logging.info("{}".format(s))
                         w.addItem(QtCore.QString("{}".format(s)))
-                    self.tbl1.setCellWidget(r,2,w)
+                    self.tbl2.setCellWidget(r,2,w)
                 elif row[1] == 'button':
                     pass
                 else:
                     self.tbl2.setItem(r, 2, QtGui.QTableWidgetItem(row[2]))
+        self.tbl2.blockSignals(False)
 
     def removeSelectedNode(self):
         logging.info("removeSelectedNode columnCount:{} column:{}".format(self.tree2.columnCount(), self.tree2.currentColumn()))
@@ -222,9 +349,10 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                 child = item.child(row)
                 if isinstance(child, MyTreeWidgetItem):
                     # append all field & as subElement
-                    name = child.data(1,0).toPyObject().name
-                    fields = child.data(2,0).toPyObject().getData()
-                    propertylist = child.data(1,0).toPyObject().getData()
+                    selected = child.data(1,0).toPyObject()
+                    name = selected.name
+                    fields = selected.getField()
+                    propertylist = selected.getData()
                     if fields:
                         element = etree.SubElement(root, 'TestCase')
                         logging.info(" {}".format( repr(fields) ))
@@ -309,11 +437,11 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                 for c in range(self.tbl1.columnCount()):
                     w = self.tbl1.item(r, c)
                     if w:
-                        logging.info("w r {} c {} type {} text {}".format(r, c, w.type(), w.text()))
+                        #logging.debug("w r {} c {} type {} text {}".format(r, c, w.type(), w.text()))
                         record.append( str(w.text()) )
                 data.append(record)
             t = ",".join(["-".join(i) for i in data ])
-            logging.info("data1: " + t)
+            logging.debug("data1: " + t)
             pyobj = self.node.data(1,0).toPyObject() #QVariant
             pyobj.setData(data)
         else:
@@ -328,22 +456,21 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                 for c in range(self.tbl2.columnCount()):
                     w = self.tbl2.item(r, c)
                     if w:
-                        logging.info("w r {} c {} type {} text {}".format(r, c, w.type(), w.text()))
+                        #logging.debug("w r {} c {} type {} text {}".format(r, c, w.type(), w.text()))
                         record.append( str(w.text()) )
                 data.append(record)
             t = ",".join(["-".join(i) for i in data ])
-            logging.info("data2: " + t)
-            pyobj = self.node.data(2,0).toPyObject() #QVariant
-            pyobj.setData(data)
-
+            logging.debug("data2: " + t)
+            pyobj = self.node.data(1,0).toPyObject() #QVariant
+            pyobj.setField(data)
         else:
             logging.error("no current node !!!")
     def runAllNode(self):
-        t1 = time.time()*1000
+        t1 = time.time()*1000000
         logging.info("begin: {}".format(t1))
         for i in range(self.tree2.topLevelItemCount()):
             self.runOneNode( self.tree2.topLevelItem(i) )
-        t2 = time.time()*1000
+        t2 = time.time()*1000000
         logging.info("end: {}".format(t2-t1))
 
     def runSelectedNode(self, selected = None):
@@ -354,12 +481,12 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         logging.info("runOneNode")
 
         def loopRun(item):
-            t1 = time.time()*1000
+            t1 = time.time()*1000000
             logging.info("begin: {}".format(t1))
             item.runCommand()
             for i in range(item.childCount()):
                 loopRun(item.child(i))
-            t2 = time.time()*1000
+            t2 = time.time()*1000000
             logging.info("end: {}".format(t2-t1))
         loopRun(item)
 
@@ -368,11 +495,9 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         obj.name = name
         obj.text = name
         obj.setData(data)
-        obj2 = BtCommand( str(name) )
-        obj2.setData(field)
+        obj.setField(field)
         item = MyTreeWidgetItem( parent, QtCore.QStringList(QtCore.QString( name )))
         item.setData(1 , 0, QtCore.QVariant(obj))
-        item.setData(2 , 0, QtCore.QVariant(obj2))
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
         return item
 
@@ -385,7 +510,6 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
             self.tree2.setItemExpanded(self.tree2.currentItem(), True)
         else:
             self.tree2.addTopLevelItem(item)
-
         pass
 
     def saveAllNode(self, filename="tree.xml"):
@@ -401,8 +525,14 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         a = self.tree2.currentItem()
         if a != None:
             # save a
-            self.updateTable1(a, a.data(1,0).toPyObject().getData())
-            self.updateTable2(a, a.data(2,0).toPyObject().getData())
+            selected = a.data(1,0).toPyObject()
+            self.updateTable1(a, selected.getData())
+            self.updateTable2(a, selected.getField())
+            self.updateConsole(a, selected)
+
+    # a plaintext widget to show the running command
+    def updateConsole(self, item, atom):
+        self.pteRaw1.setPlainText( str(item.getCommandDescription()) )
 
     def test(self):
         pass
