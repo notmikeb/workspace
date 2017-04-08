@@ -15,6 +15,7 @@ from lxml import etree
 #from lxml import objectify
 
 import btdayelement
+from btdayelement import *
 
 class BtCommand():
     def __init__(self, name = "Unknown"):
@@ -83,8 +84,6 @@ class MyTreeWidgetItem(QtGui.QTreeWidgetItem):
         pass
     def _fromDataXml(self, outStream):
         pass
-
-
 
 
 # http://stackoverflow.com/questions/8837950/pyqt-xml-to-qtreewidget
@@ -175,7 +174,6 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
 
     def updateTable2(self, node, data):
         self.node = node
-        #print ("updateTable2:" +repr(data))
         if data == None:
             self.tbl2.setRowCount(0)
             self.tbl2.setColumnCount(0)
@@ -216,7 +214,53 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
 
     def writeToXml(self, filename = "testplan.xml"):
         logging.info("writeToXml {}".format(filename))
-        self._exportTree()
+        self._exportTree2Xml()
+
+    def _exportTree2Xml(self):
+        def build(item, root):
+            for row in range(item.childCount()):
+                child = item.child(row)
+                if isinstance(child, MyTreeWidgetItem):
+                    # append all field & as subElement
+                    name = child.data(1,0).toPyObject().name
+                    fields = child.data(2,0).toPyObject().getData()
+                    propertylist = child.data(1,0).toPyObject().getData()
+                    if fields:
+                        element = etree.SubElement(root, 'TestCase')
+                        logging.info(" {}".format( repr(fields) ))
+                        for i in fields: #fields
+                            fname, fvalue = i
+                            etree.SubElement(element, fname).text =  str(fvalue)
+                    else:
+                        element = etree.SubElement(
+                            root, 'node', text=str(child.text(0).toUtf8()))
+                    if propertylist:
+                        for prow in propertylist:
+                            i,j,k = prow
+                            p1Element = etree.SubElement(element, 'PropertyList')
+                            p2Element = etree.SubElement(p1Element, 'DynamicProperty')
+                            paElement = etree.SubElement(p2Element, 'objValueString')
+                            paElement.text = i
+                            pbElement = etree.SubElement(p2Element, 'sName')
+                            pbElement.text = j
+                            pcElement = etree.SubElement(p2Element, 'typeString')
+                            pcElement.text = k
+
+                elif isinstance(child, PropertyListElement):
+                    element = etree.SubElement(
+                        root, 'node', text=str(child.text(0).toUtf8()))
+                else:
+                    element = etree.SubElement(
+                        root, 'node', text=str(child.text(0).toUtf8()))
+                build(child, element)
+        # <TestPlanName TestPlanName="TestPlanDaylong4" IsSeperateLog="true" DAYVersion="2.1.30.2">
+        root = etree.Element('TestPlanName')
+        attrib = { 'TestPlanName':"TestPlanDaylong4", 'IsSeperateLog':"true", 'DAYVersion':"2.1.30.2"}
+        for i in attrib.keys():
+            root.set(i, str(attrib[i]))
+        build(self.tree2.invisibleRootItem(), root)
+        from xml.dom import minidom
+        print(minidom.parseString(etree.tostring(root)).toprettyxml())
 
     def _exportTree(self):
         def build(item, root):
@@ -238,15 +282,11 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         xml = "".join( open( str(filename), "r").read() )
         def build(item, root):
             for element in root.getchildren():
-              #print element.tag
               if element.tag.find('}') >= 0:
                  tag = element.tag[element.tag.find('}')+1:]
               else:
                  tag = element.tag
-              if tag == "TestCase":
-                #print dir(element)
-                #child = self._genOneNode(None, str(element.tcName), item)
-                #child = QtGui.QTreeWidgetItem(item, [ str(element.tcName) ])
+              if isinstance(element, TestCaseElement):
                 child = self._genOneNode(element.getPropertyList().getDataList(), str(element.tcName), item, element.getFieldList())
                 child.setFlags(
                     child.flags() | QtCore.Qt.ItemIsEditable)
@@ -254,6 +294,8 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
             item.setExpanded(True)
         #root = etree.fromstring(xml)
         root = etree.XML(xml, btdayelement.parser)
+        remove_namespace(root, g_ns1)
+        remove_namespace(root, g_ns2)
         build(self.tree2.invisibleRootItem(), root)
 
         pass
@@ -321,7 +363,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
             logging.info("end: {}".format(t2-t1))
         loopRun(item)
 
-    def _genOneNode(self, data = None, name = "Unknown Name", parent = None, field = None):
+    def _genOneNode(self, data = None, name = "UnknownName", parent = None, field = None):
         obj = BtCommand( str(name) )
         obj.name = name
         obj.text = name
@@ -332,7 +374,6 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         item.setData(1 , 0, QtCore.QVariant(obj))
         item.setData(2 , 0, QtCore.QVariant(obj2))
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
-
         return item
 
     def addOneNode(self, clicked = False):

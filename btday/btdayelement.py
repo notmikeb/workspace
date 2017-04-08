@@ -13,16 +13,20 @@ class PropertyListElement(etree.ElementBase):
         return data
 
 class TestCaseElement(etree.ElementBase):
+    tag = "TestCase"
     @property
     def tcName(self):
         tagname = 'tcName'
-        if self.nsmap[None]:
-            tagname = "{" + "{}".format(self.nsmap[None]) + "}" + tagname
+        #if self.nsmap[None]:
+        #    tagname = "{" + "{}".format(self.nsmap[None]) + "}" + tagname
         #print tagname
         for i in range(len(self)):
             if self[i].tag == tagname:
                 return self[i].text
-        return "UnknowTcName"
+            else:
+                #print self[i].tag, type(self[i].tag), tagname
+                pass
+        return "UnknownTcName"
     def hasChild(self):
         for i in range(len(self)):
             if isinstance(self[i], TestCaseElement):
@@ -56,6 +60,17 @@ class TestCaseElement(etree.ElementBase):
         return None
 
 
+def remove_namespace(doc, namespace):
+    """Remove namespace in the passed document in place."""
+    ns = u'{%s}' % namespace
+    nsl = len(ns)
+    for elem in doc.getiterator():
+        if elem.tag.startswith(ns):
+            elem.tag = elem.tag[nsl:]
+
+g_ns1 = "http://www.w3.org/2001/XMLSchema-instance"
+g_ns2 = "http://schemas.datacontract.org/2004/07/DAY.TestPlan"
+
 lookup = etree.ElementNamespaceClassLookup()
 parser = etree.XMLParser()
 parser.set_element_class_lookup(lookup)
@@ -65,6 +80,7 @@ namespace['TestCase'] = TestCaseElement
 namespace['PropertyList'] = PropertyListElement
 
 namespace = lookup.get_namespace('')
+namespace['TestCase'] = TestCaseElement
 namespace['PropertyList'] = PropertyListElement
 
 ## example
