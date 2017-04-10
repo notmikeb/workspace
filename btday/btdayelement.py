@@ -47,10 +47,10 @@ class TestCaseElement(etree.ElementBase):
                 num+=1
         return None
     def getFieldList(self):
-        field = []
+        field = {}
         for i in range(len(self)):
             if not isinstance(self[i], TestCaseElement) and not isinstance(self[i], PropertyListElement):
-                field.append([self[i].tag, self[i].text])
+                field[self[i].tag] = self[i].text
         return field
 
     def getPropertyList(self):

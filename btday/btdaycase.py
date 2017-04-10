@@ -34,21 +34,31 @@ class BtCommand():
     def getData(self):
         return self.data
     def setField(self, field):
+        if type(field) != dict:
+            raise ValueError
+            return
         self.field = field
-        for row in field:
-            if isinstance(row, list):
-                if len(row) == 2 :
-                    n,v = row
-                    if n == "methodInfoName":
-                        self.cmd = v
-                else:
-                    logging.error("row len:{}".format(len(row)))
-            else:
-                logging.error("row is not a list ! {}".repr(row))
+        if self.field.has_key("methodInfoName"):
+            self.cmd = self.field['methodInfoName']
+        else:
+            self.cmd = "Unknown methodInfo"
+            logging.error("no methodInfo {}".format(repr(self.field)))
+
     def getField(self):
         return self.field
-    def runComand(self, recursive = True):
+    def runSelf(self, recursive = True):
         logging.info("self.name {}".format(self.name))
+        try:
+            if self.cmd == 'pytest':
+                pcmd = self.field['typeOfTCControlTargetName']
+                codetext = 'import {};{}({})'.format( pcmd[0:pcmd.rfind('.')], pcmd, repr(self.data))
+                logging.info("codetext is:" + codetext)
+                codeobj = compile(codetext, 'fakemodule', 'exec')
+                exec(codeobj)
+            else:
+                logging.info("do not how to run '{}'".format(self.cmd))
+        except:
+            logging.error("err: {}".format( sys.exc_info()))
 
 class HciCommand(BtCommand):
     def __init__(self, name = "Unknown"):
@@ -89,7 +99,11 @@ class MyTreeWidgetItem(QtGui.QTreeWidgetItem):
     def setType(self, isBox = False):
         self.isBox = isBox
     def runCommand(self):
-        logging.info("runCommand: {}".format(self.data(1,0).toPyObject().name))
+        obj = self.data(1,0).toPyObject()
+        logging.info("runCommand: {}".format(obj.name))
+        if obj != None:
+            obj.runSelf()
+
     def getCommandDescription(self):
         selected = self.data(1,0).toPyObject()
         #try:
@@ -167,6 +181,8 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         runAction = QtGui.QAction("Run", self.tree2)
         runAction.triggered.connect(self.runSelectedNode)
         self.tree2.addAction(runAction)
+        self.tree2.startDrag = self.tree2StartDrag
+        self.tree2.mouseMoveEvent = self.tree2MouseMoveEvent
         self._tree2BuildingUp()
 
         self.tbl1.itemChanged.connect(self.saveTable)
@@ -187,7 +203,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         item = MyTreeWidgetItem( None, QtCore.QStringList(QtCore.QString( name )))
         obj1 = BtCommand( str(name) )
         data = [["1", "2", "3"]]
-        field = [["tcName", "Hello1"], ["methodInfoName", "hello1.exe"]]
+        field = {"tcName": "Hello1", "methodInfoName":"pytest", "typeOfTCControlTargetName": "run_pytest.run1"}
         obj1.setData(data)
         obj1.setField(field)
         item.setData(1 , 0, QtCore.QVariant(obj1))
@@ -197,8 +213,8 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         name = "UI_Hello2"
         item = MyTreeWidgetItem( None, QtCore.QStringList(QtCore.QString( name )))
         obj1 = BtCommand( str(name) )
-        data = [["a", "b", "c"] ]
-        field = [["tcName", "Hello2"], ["methodInfoName", "hello2.exe"]]
+        data = [["a", "b", "c"], ["d", "d", "e"] ]
+        field = {"tcName": "Hello2", "methodInfoName":"pytest", "typeOfTCControlTargetName": "run_pytest.run1"}
         obj1.setData(data)
         obj1.setField(field)
         item.setData(1 , 0, QtCore.QVariant(obj1))
@@ -211,7 +227,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         else:
             event.ignore()
     def tree1StartDrag(self, event):
-        print "draggableList startDrag"
+        print("draggableList startDrag")
         drag = QtGui.QDrag(self)
         selected = self.tree1.currentItem().data(1,0).toPyObject()
         bstream = cPickle.dumps(selected)
@@ -220,17 +236,37 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
 
         drag = QtGui.QDrag(self)
         drag.setMimeData(mimeData)
-        result = drag.start(QtCore.Qt.MoveAction)
+        result = drag.start(QtCore.Qt.CopyAction)
 
     def tree1MouseMoveEvent(self, event):
         self.tree1.startDrag(event)
 
+    def tree2StartDrag(self, event):
+        print ("draggableList startDrag")
+        index = self.tree2.indexAt(event.pos())
+        drag = QtGui.QDrag(self)
+        selected = self.tree2.currentItem().data(1,0).toPyObject()
+        bstream = cPickle.dumps(selected)
+        mimeData = QtCore.QMimeData()
+        mimeData.setData("application/atom", bstream)
+
+        drag = QtGui.QDrag(self)
+        drag.setMimeData(mimeData)
+        result = drag.start(QtCore.Qt.MoveAction)
+        if result == QtCore.Qt.MoveAction:
+            logging.info("Drag done with {} Moveaction is {}".format(result, QtCore.Qt.MoveAction))
+        else:
+            logging.info("Drag done with {}".format(result))
+
+    def tree2MouseMoveEvent(self, event):
+        self.tree2.startDrag(event)
+
     def _tree2BuildingUp(self):
-        pass
         self.tree2.dragEnterEvent = self.tree2DragEnterEvent
         self.tree2.dragMoveEvent = self.tree2DragMoveEvent
         self.tree2.dragLeaveEvent = self.tree2DragLeaveEvent
         self.tree2.dropEvent = self.tree2DropEvent
+        self.tree2.dropMimeData = self.tree2DropMimeData
         self.tree2.setAcceptDrops(True)
 
     def tree2DragEnterEvent(self, event):
@@ -242,7 +278,13 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
     def tree2DragMoveEvent(self, event):
         if event.mimeData().hasFormat("application/atom"):
             #event.setDropAction(QtCore.Qt.MoveAction)
-            event.setDropAction(QtCore.Qt.CopyAction)
+            logging.info( "dragmove check {} {}".format(event.source() , self.tree2))
+            if event.source() == self.tree2 or event.source() == self:
+                logging.info("tree2dragmove moveAction")
+                event.setDropAction(QtCore.Qt.MoveAction or QtCore.Qt.IgnoreAction)
+            else:
+                logging.info("tree2dragmove copyAction")
+                event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
         else:
             event.ignore()
@@ -250,16 +292,127 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
     def tree2DragLeaveEvent(self, event):
         pass
 
+    def tree2DropMimeData(self, parent, row, data, action):
+        logging.info("tree2DropMimeData action:{}".format(action))
+        if action == QtCore.Qt.MoveAction:
+            return self.tree2MoveSelection(parent, row)
+        else:
+            return self.tree2CopySelection()
+        return False
+    def moveSelection(self, parent, position):
+         # self.selectedIndexes() is the selected QTreeWidgets' QModelIndex
+         # position type:int and position type:QTreeWidget is the target to put
+
+         # save the selected items' persistentQindex. if we use QModelIndex, it will change after 1 moved
+         selection = [QtCore.QPersistentModelIndex(i)
+                      for i in self.tree2.selectedIndexes()]
+         print("{} {} {}".format(position, i, QtCore.QPersistentModelIndex(i)))
+         parent_index = self.tree2.indexFromItem(parent)  #from parent type:TreeWidgetItem to get its QModelIndex
+         if parent_index in selection:
+             return False
+
+         # save the drop location in case it gets moved since it doesn't exist yet (no previous item)
+         target = self.tree2.model().index(position, 0, parent_index).row() # (row,column=0, index) to get the child's QModelIndex
+         print("position {} target {}".format(position, target)) # target sometimes is -1 when the row is lastone or empty
+         if target < 0:
+             target = position
+
+         # remove the selected items
+         taken = []
+         for index in reversed(selection):
+             #index is a QPersistentModelIndex, we need QModelIndex. both are 1-1 mapping
+             print("index.row {} {} type(position):{}".format(index.row(), type(index), type(position)))
+             item = self.tree2.itemFromIndex(QtCore.QModelIndex(index))
+             # indexFromItem vs ItemFromIndex could switch betwen WtreeItem and QModelIndex
+             if item is None or item.parent() is None:
+                 taken.append(self.tree2.takeTopLevelItem(index.row()))
+             else:
+                 taken.append(item.parent().takeChild(index.row()))
+
+         # insert the selected items at their new positions
+         while taken:
+             if position == -1:
+                 # append the items if position not specified
+                 if parent_index.isValid():
+                     parent.insertChild(
+                         parent.childCount(), taken.pop(0))
+                 else:
+                     self.tree2.insertTopLevelItem(
+                         self.tree2.topLevelItemCount(), taken.pop(0))
+             else:
+		# insert the items at the specified position
+                 if parent_index.isValid():
+                     parent.insertChild(min(target,
+                         parent.childCount()), taken.pop(0))
+                 else:
+                     self.tree2.insertTopLevelItem(min(target,
+                         self.tree2.topLevelItemCount()), taken.pop(0))
+         return True
+
     def tree2DropEvent(self, event):
+        logging.info("event DropAction: {}".format(event.dropAction()))
+        if event.dropAction() == QtCore.Qt.MoveAction:
+            position = event.pos()
+            if self.tree2.itemAt(position) == self.tree2.currentItem():
+                logging.error("abort to move to itself")
+                event.ignore()
+                event.setDropAction(QtCore.Qt.IgnoreAction)
+                return False
+
+
+            if self.tree2.currentItem():
+                parent = self.tree2.currentItem().parent()
+            else:
+                parent = self.tree2.invisibleRootItem()
+            item = self.tree2.itemAt(position)
+            p = self.tree2.indexFromItem(item)
+            logging.info("index row p  {} {}".format(p.row(), repr(p)))
+            logging.info(type(p))
+            q = QtCore.QPersistentModelIndex( p)
+            logging.info(type(q))
+            self.moveSelection(parent, q.row())
+            event.accept()
+            return True
+            """
+            selection = [QtCore.QPersistentModelIndex(i)
+                      for i in self.tree2.selectedIndexes()]
+            print("{} {} {}".format(position, i, QtCore.QPersistentModelIndex(i)))
+            parent_index = self.tree2.indexFromItem(parent)  #from parent type:TreeWidgetItem to get its QModelIndex
+            logging.info("parent_index selection: {} {}".format(parent_index, selection ))
+            if parent_index in selection:
+                event.ignore()
+                event.setDropAction(QtCore.Qt.IgnoreAction)
+                logging.error("abort drop")
+                return False
+            # success. move selected item to new parent
+            if self.tree2.currentItem() and self.tree2.itemAt(position):
+                item = self.tree2.currentItem()
+                if item.parent() != None:
+                    item.parent().removeChild(item)
+                else:
+                    self.tree2.takeTopLevelItem(self.tree2.indexOfTopLevelItem(item))
+                self.tree2.itemAt(position).addChild(item)
+                logging.info("move it")
+            else:
+                logging.error("abort drop because do not know how to move")
+                event.ignore()
+                event.setDropAction(QtCore.Qt.IgnoreAction)
+                logging.error("abort drop")
+                return False
+            """
+
+
         data = event.mimeData()
         bstream = data.retrieveData("application/atom",
             QtCore.QVariant.ByteArray)
         selected = pickle.loads(bstream.toByteArray())
         logging.info("drop data is: {}".format(selected) )
         # selected is a BTCommand object
-        parent = self.tree2.invisibleRootItem()
+        parent = self.tree2.itemAt(event.pos())
+        logging.info("event pos {} parent {}".format(event.pos(), repr(parent)))
+        if parent == None:
+            parent = self.tree2.invisibleRootItem()
         self._genOneNode(selected.getData(), str(selected.name), parent, selected.getField())
-
         event.accept()
 
     def keyPressEvent(self, event):
@@ -297,33 +450,25 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                     self.tbl1.setItem(r, 2, QtGui.QTableWidgetItem(row[2]))
         self.tbl1.blockSignals(False)
 
-    def updateTable2(self, node, data):
+    def updateTable2(self, node, fields):
         self.node = node
-        if data == None:
+        if fields == None:
             self.tbl2.setRowCount(0)
             self.tbl2.setColumnCount(0)
             return
+        if type(fields) != dict:
+            return
+        #logging.info("fields len:{}".format(len(fields.keys())))
         self.tbl2.blockSignals(True)
-        self.tbl2.setRowCount(len(data))
+        self.tbl2.setRowCount(len(fields.keys()))
         self.tbl2.setColumnCount(2)
         header_lables = ["Field","Value"]
-        self.tbl1.setHorizontalHeaderLabels(QtCore.QStringList(header_lables))
-        for row,r in zip(data, range(len(data))):
-            if len(row) > 0:
-                self.tbl2.setItem(r, 0, QtGui.QTableWidgetItem(row[0]))
-            if len(row) > 1:
-                self.tbl2.setItem(r, 1, QtGui.QTableWidgetItem(row[1]))
-            if len(row) > 2:
-                if row[1] == 'list':
-                    w = QtGui.QComboBox()
-                    for s in row[2]:
-                        logging.info("{}".format(s))
-                        w.addItem(QtCore.QString("{}".format(s)))
-                    self.tbl2.setCellWidget(r,2,w)
-                elif row[1] == 'button':
-                    pass
-                else:
-                    self.tbl2.setItem(r, 2, QtGui.QTableWidgetItem(row[2]))
+        self.tbl2.setHorizontalHeaderLabels(QtCore.QStringList(header_lables))
+
+        for r, row in zip(range(len(fields.keys())), sorted(fields.keys())):
+            #logging.info(" r row {} {}".format(r, row))
+            self.tbl2.setItem(r, 0, QtGui.QTableWidgetItem(row))
+            self.tbl2.setItem(r, 1, QtGui.QTableWidgetItem(fields[row]))
         self.tbl2.blockSignals(False)
 
     def removeSelectedNode(self):
@@ -356,8 +501,9 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
                     if fields:
                         element = etree.SubElement(root, 'TestCase')
                         logging.info(" {}".format( repr(fields) ))
-                        for i in fields: #fields
-                            fname, fvalue = i
+                        for i in fields.keys(): #fields
+                            fname = i
+                            fvalue = fields[i]
                             etree.SubElement(element, fname).text =  str(fvalue)
                     else:
                         element = etree.SubElement(
@@ -450,19 +596,17 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
     def saveTable2(self, item):
         # save all data into self.node
         if self.node:
-            data = []
+            fields = {}
             for r in range(self.tbl2.rowCount()):
                 record = []
-                for c in range(self.tbl2.columnCount()):
-                    w = self.tbl2.item(r, c)
-                    if w:
-                        #logging.debug("w r {} c {} type {} text {}".format(r, c, w.type(), w.text()))
-                        record.append( str(w.text()) )
-                data.append(record)
-            t = ",".join(["-".join(i) for i in data ])
-            logging.debug("data2: " + t)
+                if self.tbl2.columnCount() == 2:
+                    k  = str(self.tbl2.item(r, 0).text())
+                    v = str(self.tbl2.item(r, 1).text())
+                    if len(k) > 0:
+                        fields[k] = v
+            logging.debug("data2: " + repr(fields))
             pyobj = self.node.data(1,0).toPyObject() #QVariant
-            pyobj.setField(data)
+            pyobj.setField(fields)
         else:
             logging.error("no current node !!!")
     def runAllNode(self):
@@ -483,7 +627,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         def loopRun(item):
             t1 = time.time()*1000000
             logging.info("begin: {}".format(t1))
-            item.runCommand()
+            item.runCommand() # invoke
             for i in range(item.childCount()):
                 loopRun(item.child(i))
             t2 = time.time()*1000000
@@ -521,10 +665,13 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         logging.info("hello")
         pass
     def itemClicked(self, a =None, b = None):
-        logging.info("{} {} {}".format(sys._getframe().f_code.co_name, repr(a), repr(b)))
+        #logging.info("{} {} {}".format(sys._getframe().f_code.co_name, repr(a), repr(b)))
         a = self.tree2.currentItem()
+        p = self.tree2.indexFromItem(a)
+        p2 = self.tree2.indexFromItem(a.parent())
         if a != None:
             # save a
+            #logging.info("index {} row {} persistent {} p-index {} p2.row {}".format(p, p.row(), repr(QtCore.QPersistentModelIndex( p)), self.tree2.indexFromItem(a.parent()) , p2.row()) )
             selected = a.data(1,0).toPyObject()
             self.updateTable1(a, selected.getData())
             self.updateTable2(a, selected.getField())
@@ -540,7 +687,7 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
 if __name__ == "__main__":
   a = QtGui.QApplication(sys.argv)
   m = BtDayMainClass()
-  print "begin show"
+  print("begin show")
   m.show()
-  print "show done"
+  print("show done")
   a.exec_()
