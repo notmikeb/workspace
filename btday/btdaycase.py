@@ -52,7 +52,14 @@ class BtCommand():
             if self.cmd == 'pytest':
                 pcmd = self.field['typeOfTCControlTargetName']
                 codetext = 'import {};{}({})'.format( pcmd[0:pcmd.rfind('.')], pcmd, repr(self.data))
-                logging.info("codetext is:" + codetext)
+                logging.info("python-code is:" + codetext)
+                codeobj = compile(codetext, 'fakemodule', 'exec')
+                exec(codeobj)
+            elif self.cmd == 'sl4a':
+                pcmd = self.field['typeOfTCControlTargetName']
+                valuelist = [i[1] for i in self.data]
+                codetext = 'import {};{}({})'.format( pcmd[0:pcmd.rfind('.')], pcmd, repr(valuelist))
+                logging.info("python-code is:" + codetext)
                 codeobj = compile(codetext, 'fakemodule', 'exec')
                 exec(codeobj)
             else:
@@ -199,27 +206,22 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
         #self.updateTable1(sampleData)
 
     def _tree1BuildingUp(self):
-        name = "UI_Hello1"
-        item = MyTreeWidgetItem( None, QtCore.QStringList(QtCore.QString( name )))
-        obj1 = BtCommand( str(name) )
         data = [["1", "2", "3"]]
         field = {"tcName": "Hello1", "methodInfoName":"pytest", "typeOfTCControlTargetName": "run_pytest.run1"}
-        obj1.setData(data)
-        obj1.setField(field)
-        item.setData(1 , 0, QtCore.QVariant(obj1))
-        item.setData(2 , 0, QtCore.QVariant(obj1))
-        self.tree1.addTopLevelItem(item)
+        self._genOneNode(data, str("pytest_run1_func"), self.tree1.invisibleRootItem(), field)
 
-        name = "UI_Hello2"
-        item = MyTreeWidgetItem( None, QtCore.QStringList(QtCore.QString( name )))
-        obj1 = BtCommand( str(name) )
         data = [["a", "b", "c"], ["d", "d", "e"] ]
-        field = {"tcName": "Hello2", "methodInfoName":"pytest", "typeOfTCControlTargetName": "run_pytest.run1"}
-        obj1.setData(data)
-        obj1.setField(field)
-        item.setData(1 , 0, QtCore.QVariant(obj1))
-        item.setData(2 , 0, QtCore.QVariant(obj1))
-        self.tree1.addTopLevelItem(item)
+        field = {"tcName": "Hello2", "methodInfoName":"pytest", "typeOfTCControlTargetName": "run_pytest.run3"}
+        self._genOneNode(data, str("pytest_run3_func"), self.tree1.invisibleRootItem(), field)
+
+
+        data = [['port','0', 'int'], ['method', 'makeToast','string'],["param1", "c-hello~", 'string'] ]
+        field = {"tcName": "sl4a_Hello", "methodInfoName":"sl4a", "typeOfTCControlTargetName": "run_sl4a.run1"}
+        self._genOneNode(data, str("sl4a_makeToast"), self.tree1.invisibleRootItem(), field)
+
+        data = [['port','0', 'int'], ['method', 'checkBluetoothState','string']]
+        field = {"tcName": "sl4a_checkBluetoothState", "methodInfoName":"sl4a", "typeOfTCControlTargetName": "run_sl4a.run1"}
+        self._genOneNode(data, str("sl4a_GetBluetoothState"), self.tree1.invisibleRootItem(), field)
 
     def tree1DragEnterEvent(self, event):
         if event.mimeData().hasFormat("application/x-person"):
@@ -278,12 +280,12 @@ class BtDayMainClass(QtGui.QMainWindow, btdaycase_ui.Ui_MainWindow):
     def tree2DragMoveEvent(self, event):
         if event.mimeData().hasFormat("application/atom"):
             #event.setDropAction(QtCore.Qt.MoveAction)
-            logging.info( "dragmove check {} {}".format(event.source() , self.tree2))
+            #logging.info( "dragmove check {} {}".format(event.source() , self.tree2))
             if event.source() == self.tree2 or event.source() == self:
-                logging.info("tree2dragmove moveAction")
+                #logging.info("tree2dragmove moveAction")
                 event.setDropAction(QtCore.Qt.MoveAction or QtCore.Qt.IgnoreAction)
             else:
-                logging.info("tree2dragmove copyAction")
+                #logging.info("tree2dragmove copyAction")
                 event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
         else:

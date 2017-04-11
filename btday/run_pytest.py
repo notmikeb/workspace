@@ -50,7 +50,6 @@ stderr_logger = logging.getLogger('STDERR')
 sl = StreamToLogger(stderr_logger, logging.ERROR)
 sys.stderr = sl
 
-
 def run1(*l, **d):
     print("run1")
     print("list:{}".format(repr(l)))
