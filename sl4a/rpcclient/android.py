@@ -29,6 +29,8 @@ HOST = os.environ.get('AP_HOST')
 HANDSHAKE = os.environ.get('AP_HANDSHAKE')
 Result = collections.namedtuple('Result', 'id,result,error')
 
+import tracelogging
+import logging
 
 class Android(object):
 
@@ -51,6 +53,8 @@ class Android(object):
     response = self.client.readline()
     self.id += 1
     result = json.loads(response)
+    logging.info(repr(data))
+    logging.info(repr(result))
     if result['error'] is not None:
       print result['error']
     # namedtuple doesn't work with unicode keys.
