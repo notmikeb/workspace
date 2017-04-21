@@ -4,9 +4,9 @@ import pymssql
 server = getenv("PYMSSQL_TEST_SERVER")
 user = getenv("PYMSSQL_TEST_USERNAME")
 password = getenv("PYMSSQL_TEST_PASSWORD")
-server = 'mssql5.gear.host'
-user = 'database111'
-password = 'goto123$'
+server = '192.168.0.11'
+user = 'sa'
+password = 'goto1234'
 
 conn = pymssql.connect(server, user, password, "database111")
 cursor = conn.cursor()
