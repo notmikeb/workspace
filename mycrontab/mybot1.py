@@ -165,7 +165,7 @@ for item in items:
         job1.last_run = None
     print ("job1 type{} last_run:{}".format( type(job1), job1.last_run ))
     #job1.parse(cronstring)
-    print "job render '{}' id:{}".format(job1.render().encode('utf8'), job1.id)
+    print "job render '{}' id:{} last_run:{}".format(job1.render().encode('utf8'), job1.id, job1.last_run)
     
 print ct1.render()
 

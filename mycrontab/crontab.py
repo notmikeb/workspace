@@ -728,6 +728,7 @@ class CronItem(object):
                     print "ignore in run_pending next:{} now:{}".format(next_time, now)
             else:
                 self.last_run = now
+                return self.run()
 
     def run(self):
         """Runs the given command as a pipe"""
