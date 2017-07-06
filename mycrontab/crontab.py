@@ -402,8 +402,8 @@ class CronTab(object):
         for count in range(loop):
             print "====="
             nextlist = self.get_sleeper()
-            for i,j in enumerate(nextlist):
-               print("index:{} current:{}".format(i,j))
+            #for i,j in enumerate(nextlist):
+            #   print("iter:{} next:{}".format(i,j))
             neartime = min(nextlist)  
             stime = neartime - now + timedelta(seconds = 2)
             print "now:{} min:{} sleep:{}-seconds".format(now, neartime, stime.total_seconds())
@@ -740,7 +740,7 @@ class CronItem(object):
         if sys.platform.startswith('win32') or sys.platform.startswith('cli'):
             try:
                 if self.handler != None:
-                    self.handler(self.command, self)
+                    self.handler(self.command, self, trigger = 'cron')
                     err = None
                 else:
                     (out, err) = open_pipe("cmd.exe", '/c', self.command).communicate()

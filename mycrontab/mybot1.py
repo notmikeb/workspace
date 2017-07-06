@@ -46,21 +46,42 @@ def getCronTable(c):
         print "{} {}".format(i[0], i[1])
     return items
     
+def getNoackRecords():
+    c = openDb()
+    sqlstring = "select id from crontable where ack <> 1 and action not like '%/checknoack%'"
+    r = c.execute(sqlstring)
+    c.commit()
+    all = r.fetchall()
+    noacklist = [i[0] for i in all]
+    print ("result r:{}".format(noacklist))
+    closeDb(c)
+    return noacklist
+
+def setNoackRecord(id, b):
+    c = openDb()
+    if b:
+        ack_value = 1
+    else:
+        ack_value = 0
+    sqlstring = "update crontable set ack={} where id={}".format(ack_value, id )
+    r = c.execute(sqlstring)
+    c.commit()
+    print ("result r:{}".format(r))
+    closeDb(c)
+    return r
+
+    
 def getChatId(c):
     sqlstring = "select chatid, comment from chattable"
     r = c.execute(sqlstring)
     a = r.fetchone()
     return a
 
-def RunCommand(a,b):
-    #msg = "RunCommand '{}' '{}'".format(a, b)
-    return HandleCron(a, b)
-
 def sendMsg(msg):
     if g_chatid > 0:
         bot.sendMessage(g_chatid, msg )
 
-def HandleCron(cmdstring, job = None):
+def HandleCron(cmdstring, job = None, trigger = None):
     ret = True;
     try:
         cmds = cmdstring.split(' ')
@@ -72,6 +93,8 @@ def HandleCron(cmdstring, job = None):
                                         [KeyboardButton(text="/cronack id:{}".format(job.id)), KeyboardButton(text="/cron id:{}".format(job.id))]
                                     ]
                                 )
+            if job.id >= 0 and trigger == 'cron':                    
+                setNoackRecord(job.id, 0)
         else:
             markup = None
 
@@ -94,15 +117,21 @@ def HandleCron(cmdstring, job = None):
             bot.sendMessage(g_chatid, msg,
                                reply_markup = markup, parse_mode = "HTML")
         elif cmd.lower() == '/checknoack':
+            if job != None:
+                ignoreid = job.id
+                setNoackRecord(job.id, True)        
             noacks = getNoackRecords()
             print ("noacks '{}'".format(noacks))
+            bot.sendMessage(g_chatid, "checknoack----start");
+            ignoreid = -1
             for i, id in enumerate(noacks):
-                print ("get the index:'{}'".format(index))
-                for job in c1:
-                    if job.id == id:
+                print ("get the index:'{}'".format(i))
+                for job in ct1:
+                    if job.id == id and ignoreid != id:
                         # do the command again
                         HandleCron(job.command, job)
-                sleep(10)
+                time.sleep(1)
+            bot.sendMessage(g_chatid, "checknoack----end");
         elif cmd.lower() in ["/cronack" ,"cron:ack"] :
             id = -1
             try:
@@ -115,6 +144,7 @@ def HandleCron(cmdstring, job = None):
                 ret = getRecordLastrun(id)
                 print "ret ", ret
                 ret = True
+            setNoackRecord(id, True)
             sendMsg('ack to id:{} done'.format(id))
         else:
             print("cron cmd:'{}'".format(cmd))
@@ -163,9 +193,9 @@ for item in items:
         job1.last_run = datetime.strptime(last_run, DATETIME_FORMAT)
     except:
         job1.last_run = None
-    print ("job1 type{} last_run:{}".format( type(job1), job1.last_run ))
+    #print ("job1 type{} last_run:{}".format( type(job1), job1.last_run ))
     #job1.parse(cronstring)
-    print "job render '{}' id:{} last_run:{}".format(job1.render().encode('utf8'), job1.id, job1.last_run)
+    #print "job render '{}' id:{} last_run:{}".format(job1.render().encode('utf8'), job1.id, job1.last_run)
     
 print ct1.render()
 
@@ -308,9 +338,16 @@ if a and a[0] > 0:
     g_chatid = a[0]
 print ('Listening ...')
 
-def run():
-    ct1.run_sleeper(timeout = 3, loop = 20, test = False)
+def run(loop = 20):
+    ct1.run_sleeper(timeout = 3, loop = loop, test = False)
 # Keep the program running.
 #while 1:
 #    time.sleep(1000)
+
+if __name__ == "__main__":
+    print "sys.argv '{}' len:{}".format(sys.argv, len(sys.argv))
+    if len(sys.argv) < 2:
+        time.sleep(1)
+        run(loop = 200)
+        bot.sendMessage(chat_id, "byebye", parse_mode = "HTML")
 print "end"	
