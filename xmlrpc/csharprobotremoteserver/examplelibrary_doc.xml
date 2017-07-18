@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>examplelibrary</name>
+    </assembly>
+    <members>
+        <member name="T:RobotFramework.ExampleRemoteLibrary">
+            <summary>
+            RobotFramework example of .NET Implementation of a remote library.
+            Based on the Python example at http://robotframework.googlecode.com/svn/trunk/tools/remoteserver/example/examplelibrary.py
+            Compile into an assembly DLL and pass filename and "RobotFramework.ExampleRemoteLibrary"
+            as arguments to the .NET implementation of remote server
+            to start the server with this library.
+            </summary>
+        </member>
+        <member name="M:RobotFramework.ExampleRemoteLibrary.strings_should_be_equal(System.String,System.String)">
+            <summary>
+            Example keyword that validates 2 given strings match.
+            Throws exception (as a way to fail) when strings don't match.
+            Logs comparing of 2 strings to keyword output (standard output redirected).
+            </summary>
+            <param name="str1">1st string to compare</param>
+            <param name="str2">2nd string to compare</param>
+        </member>
+        <member name="M:RobotFramework.ExampleRemoteLibrary.count_items_in_directory(System.String)">
+            <summary>
+            Example keyword that returns # of items in a given directory.
+            Items include folders, subfolders, and files, etc.
+            </summary>
+            <param name="path">Directory to get # of items for</param>
+            <returns>Number of items in the given directory</returns>
+        </member>
+    </members>
+</doc>
