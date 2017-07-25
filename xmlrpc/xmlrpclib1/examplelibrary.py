@@ -42,12 +42,24 @@ class ExampleLibrary(object):
         print("create a rpc by config '{}'".format(config))
         rpc_count = rpc_count+1
         return rpc_count -1
+        return 0
     def create_connect(self, index, addr):
         print("{}: create_connect to {}".format(index, addr))
+        return 0
     def destroy_connect(self, index, reason):
         print("{}: destroy_connectto {}".format(index, reason))
+        return 0 
     def send_data(self, index, data):
         print("{}: send_datato {}".format(index, data))
+        return 0
+    def runcase(self, index, casename, *param):
+        print("runcase handle:{} casename:{} parameter:{} ".format(index, casename, " ".join(param)))
+        return 0
+    def runaction(self, index, casename, *param):
+        print("runaction handle:{} action:{} parameter:{} ".format(index, casename, " ".join(param)))
+        return 0
+
+
 
 if __name__ == '__main__':
     RobotRemoteServer(ExampleLibrary(), *sys.argv[1:])
