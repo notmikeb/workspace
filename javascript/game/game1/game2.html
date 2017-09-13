@@ -1,0 +1,181 @@
+<canvas id="gd" width=200 height=200></canvas>
+
+
+<script>
+var speed = 5;
+window.onload = function(){
+    //document.write("hello, world");
+    canv = document.getElementById("gd");
+    ctx = canv.getContext("2d");
+    iii = setInterval(game, 1000/speed);
+    document.addEventListener("keydown", keyHandle);
+}
+
+var px = py = 0;
+var ax = ay = 5;
+var vx = 1;
+var vy = 0;
+var gs = 20;
+var space = 2;
+trail = []
+tail = 5
+pause = 0
+idle = 10
+
+function game(){
+    //console.log("run");
+    // move
+    if( !pause ){
+    px += vx;
+    py += vy;
+    }
+    if(px < 0 ){
+    px = canv.width/gs-1;
+    }
+    if(px > canv.width/gs-1 ){
+    px = 0;
+    }
+    if(py < 0 ){
+    py = canv.height/gs-1;
+    }
+    if(py > canv.height/gs-1 ){
+    py = 0;
+    }
+     
+    // show player
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canv.width, canv.height);
+
+    // show apple
+    ctx.fillStyle = "red";
+    ctx.fillRect(ax*gs, ay*gs, gs-2, gs-2);
+    
+    // show trail
+    ctx.fillStyle = "blue";
+    for(i = 0 ; i < trail.length; i++){
+        ctx.fillRect(trail[i].x*gs, trail[i].y*gs, gs-2, gs-2);
+    }
+    ctx.fillStyle = "green";
+    ctx.fillRect(px*gs, py*gs, gs-2, gs-2);
+    if(!pause){
+        trail.push({x:px, y:py});
+        if( !pause && trail.length > tail ){
+            trail.shift();
+        }
+    }
+    
+    
+    // check eat apple
+    if(px == ax && py == ay){
+        // eat !
+        tail += 1;
+        ax = Math.floor( Math.random() * ((canv.width/gs)-1) );
+        ay = Math.floor( Math.random() * ((canv.height/gs)-1) );
+        console.log("tail " +tail);
+    }
+    
+    idle -= 1;
+    // don't change direction
+    if( vx != 0 && py == ay){ //vy = 0 
+        console.log("at same row");
+        idle+=1;
+    }
+    if( vy != 0 && px == ax){
+        console.log("at same column");
+        idle += 1;
+    }
+    if( idle <=0 ){
+        conflict = 1;
+        while( conflict ){
+            choose = Math.floor( Math.random()* 4);
+            idle = Math.floor( Math.random() * Math.sqrt(tail)+1 ) ;
+            console.log("your choose is " + choose);
+            switch(choose){
+                case 0: // turn left
+                   if( vx == 1 && vy == 0){
+                     
+                   }else{
+                      conflict = 0;
+                      vx = -1; vy = 0;
+                   }
+                   break;
+                case 1:
+                   if( vx == 0 && vy == 1){
+                     
+                   }else{
+                      conflict = 0;
+
+                      vx = 0; vy = -1;
+                    }
+                    break;
+                case 2:
+                   if( vx == -1 && vy == 0){
+                     
+                   }else{
+                      conflict = 0;
+                
+                        vx = 1; vy = 0;
+                    }
+                    break;
+                case 3:
+                   if( vx == 0 && vy == -1){
+                     
+                   }else{
+                      conflict = 0;
+                      vx = 0; vy = 1;
+                   }
+                    break;
+                case 4:
+                    pause = !pause;
+                    break;
+            }
+        }
+    }
+}
+
+
+
+function keyHandle(evt){
+    console.log(evt.keyCode)
+    
+    switch(evt.keyCode){
+        case 37:
+        pause = 0;
+        vx = -1; vy = 0;
+        break;
+        case 38:
+        pause = 0;
+        vx = 0; vy = -1;
+        break;
+        case 39:
+        pause = 0;
+        vx = 1; vy = 0;
+        break;
+        case 40:
+        pause = 0;
+        vx = 0; vy = 1;
+        break;
+        case 32:
+        pause = !pause;
+        break;
+        case  109: // -
+            speed -= 1;
+            if( speed <= 1){
+                speed = 1;
+            }
+            window.clearInterval(iii);
+            iii = window.setInterval(game, 1000/speed);
+            console.log("speed " + speed);
+            break;
+        case 107: // +
+            speed += 1;
+            if( speed <= 1){
+                speed = 1;
+            }
+            window.clearInterval(iii);
+            iii = window.setInterval(game, 1000/speed);
+            console.log("speed " + speed);
+        break;
+    }
+}
+</script>
