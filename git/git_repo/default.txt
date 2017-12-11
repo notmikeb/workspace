@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote  name="origin"
+           fetch=".."
+           review="https://android-review.googlesource.com/" />
+  <default revision="master"
+           remote="origin"
+           sync-j="4" />
+  <project path="myapp2/myapp_case" name="myapp2.case" groups="pdk" >
+    <copyfile src="txt/readme.md" dest="README.md" />
+  </project>
+  <project path="myapp2/myapp_sdk" name="myapp2.sdk" groups="pdk,tradefed" />
+  
+</manifest>
