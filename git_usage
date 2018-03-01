@@ -1,0 +1,19 @@
+#
+
+## 
+why is push gerrit HEAD:refs/for/master
+https://stackoverflow.com/questions/10461214/why-is-git-push-gerrit-headrefs-for-master-used-instead-of-git-push-origin-mast
+
+##
+default to push refs/for/master instead of refs/heads/master
+http://hamersun.blogspot.tw/2012/12/git-pushdefault-pushcode-review-server.html
+
+global setting
+git config remote.origin.push refs/heads/*:refs/for/*
+
+oneshot 
+git push origin HEAD:refs/for/master
+
+## permission control
+gerrit -> projects -> access -> edit
+https://read01.com/zh-tw/M3Rke3.html#.WmOTJJP1UW8
