@@ -15,3 +15,13 @@ def api_get_user(*, id):
 def api_get_blog(*, id):
     blog = { 'id' : id }
     return web.Response(text="this is a {}".format(id), status='200')
+
+import json
+
+@get('/api/json/{id}')
+def api_get_json(*, id):
+    blog = { 'id' : id, 'name' : '陳先生' }
+    dict2 = blog
+    text = json.dumps( dict2, ensure_ascii=False)
+    return web.Response(text=text, status='200')
+
