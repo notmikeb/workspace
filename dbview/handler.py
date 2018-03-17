@@ -52,11 +52,17 @@ class MSSQL(object):
         self.connect.commit()
         self.connect.close()
 
+def query_sqlstring(sqlstring):
+        ms = MSSQL(host="", user="msp", pwd="123456", db="MSPDB_Debugging")
+        print(sqlstring)
+        a = ms.query_db( sqlstring )
+        import json
+        data= json.dumps( a, default = dump_date, indent = 2)
+        return data        
+
 def test( max = 3, cl = None): ## ms = MSSQL(host="localhost",user="msp",pwd="123456",db="MSPDB_Debugging")
         ## ms.ExecNonQuery("insert into WeiBoUser values('2','3')")
         ms = MSSQL(host="", user="msp", pwd="123456", db="MSPDB_Debugging")
-        #resList = ms.ExecQuery("SELECT top 10 * FROM dbo.Task order by TaskID desc")
-        #print(resList)
         try: 
             max = int(max)
         except:

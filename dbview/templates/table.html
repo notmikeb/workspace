@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
   <meta charset="utf-8">
   <title>data demo</title>
@@ -32,6 +33,8 @@
         console.log(data);
         g_data = data;
         drawTableData();
+
+        getChipNameFromData();
         })
       }
 
@@ -96,7 +99,6 @@
           t2 = new Date( g_data[index]['LoadBuildFinishTime'] );
           t3 = new Date(  )
           // now-
-          
 
           newrow.push ( getWaitString( ((t3-t1)) )) ;
           newrow.push ( getWaitString( ((t3-t2)) ) );
@@ -107,6 +109,116 @@
           data.addRow( Object.values(newrow))
         }
         var table = new google.visualization.Table(document.getElementById('table_div'));
+
+        table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
+         
+
+      }
+
+      // already get the g_dataRelated based on chipname and platform from g_data
+      function getChipNameFromData(){
+        cnlist = []
+        pllist = []
+        if( g_data.length > 0 ){
+
+          for ( i in g_data ){
+            cn = g_data[i]['ChipName'];
+            pl = g_data[i]['Platform'];
+            if( g_data[i]['Status'] != 'DONE'){
+              cnlist.push(cn);
+              pllist.push(pl);
+            }
+
+
+            
+          }
+          cnlist = new Set(cnlist);
+          pllist = new Set(pllist);
+          console.log("cnlist ", cnlist);
+          console.log("pllist ", pllist);
+        }
+        newone = {}
+        newone["ChipNames"] = JSON.stringify(Array.from(cnlist));
+        newone["Platforms"] = JSON.stringify(Array.from(pllist));
+        var sendInfo = {
+           Name: 'noname',
+           Address: 'stress 112',
+           Phone: '0912345678'
+       };
+       
+       $('#table2_text').text( JSON.stringify(newone) )
+
+       // json http://json.org/
+
+       // https://stackoverflow.com/questions/8517071/send-json-data-via-post-ajax-and-receive-json-response-from-controller-mvc
+        $.ajax({
+          type: "POST",
+          //traditional: true,
+          url: "/api/related",
+          //async: false,
+          //data: JSON.stringify(sendInfo),
+          data: JSON.stringify(newone),
+          dataType: "json",
+          //traditional:true ,
+          contentType: "application/json; charset=utf-8",
+          success: function(data) {
+
+              // success
+              console.log(" get a data", data)
+              g_dataRelated = data;
+
+              update_dataRelated();
+          }, 
+          error: function(data)
+{
+  console.log("failed to get related data");
+}          
+});
+
+      }
+
+      function update_dataRelated(){
+        console.log("update table2_div table based on g_dataRelated");
+        drawTableDataRelated();
+      }
+
+
+      function drawTableDataRelated() {
+
+        rows = g_dataRelated;
+        
+        var data = new google.visualization.DataTable();
+        var ks =  getKs2( rows[0] )
+        // add calculated columns
+        data.addColumn('string', 'Now-CreatedTime');
+        data.addColumn('string', 'Now-LoadedTime');
+
+        for (i in ks){
+           data.addColumn('string', ks[i]);
+        }
+        
+        // temporary
+        
+        
+        //
+        for ( index in rows){
+          newrow = []
+          // add calculated columns
+          t1 = new Date( rows[index]['CreatedTime'] );
+          t2 = new Date( rows[index]['LoadBuildFinishTime'] );
+          t3 = new Date(  )
+          // now-
+          
+
+          newrow.push ( getWaitString( ((t3-t1)) )) ;
+          newrow.push ( getWaitString( ((t3-t2)) ) );
+          for( i in ks ){
+           newrow.push( '' + rows[index][ks[i]]);
+           //console.log(newrow);
+          }
+          data.addRow( Object.values(newrow))
+        }
+        var table = new google.visualization.Table(document.getElementById('table2_div'));
 
         table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
          
@@ -129,6 +241,8 @@
         table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
          
       }
+
+
       function new_query(){
         console.log( "new_query ", $('#clno').val() );
         finishLoading();
@@ -157,7 +271,10 @@
 </script>
 <body>
 
-  <input value="71" id="clno" /> <input type="button" value="Query CL in P4Label column" > </button>
+ Get TaskIDs by CL: <br/>
+  <input value="739" id="clno" /> <input type="button" value="Query CL in P4Label column" > </button>
+
+  <input type="button" value="test" onclick="javascript: getChipNameFromData()" />
 <div id="table_div"></div>
 
 <br/>
@@ -165,6 +282,12 @@
 <div id="one"></div>
 <div id="two"></div>
 <div id="three"></div>
+
+Related NOT-DONE TaskIDs: <br/>
+<p>Waiting Platforms</p>
+<div id="table2_text"></div>
+<p>NOT-DONE TaskIDs</p>
+<div id="table2_div"></div>
  
 <script>
 
