@@ -24,7 +24,16 @@ def form_table():
 @app.route('/api/query')
 def get_query():
     import handler
-    return handler.test()
+    max = 50
+    try:
+        max = int(request.args.get('max'))
+    except:
+        max = 50
+    try:
+        cl = request.args.get('cl')
+    except:
+        cl = None
+    return handler.test(max, cl = cl)
 
 if __name__ == '__main__':
-  app.run(debug=True, port = 9000)
+  app.run(debug=True, port = 9000, host = "0.0.0.0")

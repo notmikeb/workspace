@@ -19,20 +19,23 @@
        
 
 <script>
-
-
       google.charts.load('current', {'packages':['table']});
       google.charts.setOnLoadCallback(finishLoading);
       
       function finishLoading(){
-$.getJSON( "/api/query", function(data){
-console.log(data);
-g_data = data;
-drawTableData();
-})
+        url = "/api/query?max=50"
+        if ( $('#clno').val().length > 1){
+          url = url + "&cl=" + $('#clno').val()
+        }
+        console.log("url is ", url)
+        $.getJSON( url, function(data){
+        console.log(data);
+        g_data = data;
+        drawTableData();
+        })
       }
 
-/* https://ischurov.github.io/pythonvjs/ */
+      /* https://ischurov.github.io/pythonvjs/ */
 
       function comparekey(a, b){
          if( a== 'TaskID' ) {
@@ -40,9 +43,9 @@ drawTableData();
          }
          return a >b ;
       }
-      function drawTableData() {
-        var data = new google.visualization.DataTable();
-        ks = Object.keys(g_data[0])
+
+      function getKs( jsonobject ){
+        ks = Object.keys( jsonobject )  // jsonobject is a dict / object
         ks.sort();
         ks.splice( ks.indexOf('TaskID'), 1)
         ks.splice( ks.indexOf('Status'), 1)
@@ -54,14 +57,52 @@ drawTableData();
         ks.push('Status')
         ks.push('TaskID')
         ks.reverse()
+        return ks
+      }
+
+      function getKs2(jsonobject){
+        return ['TaskID', 'Status', 'ChipName', 'Platform', 'Mode' , 'AssignedTo', 'CreatedTime', 'P4Label', 'Result',
+         'LoadBuildResult', 'SendMailResult', 
+         'LoadBuildFinishTime', 'TestFinishTime']
+      }
+
+      function getWaitString( msec ){
+        // calculate msec to readable string
+        left = msec;
+        ds = Math.ceil( msec / (3600000*24))
+        left = left % (3600000*24)
+        hs = Math.ceil( left / 3600000 )
+        left = left % 3600000
+        ms = Math.ceil( left / 60000 )
+        left = left %60000
+        return " " + ds + " days " + hs + " hours " + ms + " mins";
+
+      }
+
+      function drawTableData() {
+        var data = new google.visualization.DataTable();
+        var ks =  getKs2( g_data[0] )
+        // add calculated columns
+        data.addColumn('string', 'Now-CreatedTime');
+        data.addColumn('string', 'Now-LoadedTime');
+
         for (i in ks){
            data.addColumn('string', ks[i]);
         }
         for ( index in g_data){
           newrow = []
+          // add calculated columns
+          t1 = new Date( g_data[index]['CreatedTime'] );
+          t2 = new Date( g_data[index]['LoadBuildFinishTime'] );
+          t3 = new Date(  )
+          // now-
+          
+
+          newrow.push ( getWaitString( ((t3-t1)) )) ;
+          newrow.push ( getWaitString( ((t3-t2)) ) );
           for( i in ks ){
            newrow.push( '' + g_data[index][ks[i]]);
-           console.log(newrow);
+           //console.log(newrow);
           }
           data.addRow( Object.values(newrow))
         }
@@ -88,11 +129,39 @@ drawTableData();
         table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
          
       }
+      function new_query(){
+        console.log( "new_query ", $('#clno').val() );
+        finishLoading();
+      }
+      
+      $(document).ready( () =>  {
+        console.log('ready!');
+        $("#clno").click(function () {
+          console.log("clno input clicked !")
+          //finishLoading();
+        });
+
+        $("#clno").on('keydown', function(e) { 
+            if (e.which == 13) { 
+              console.log("keydown enter");
+              finishLoading();
+            }else{
+              console.log("e.which ", e.which);
+            } 
+            
+            }
+            
+            );
+
+      });
 </script>
 <body>
+
+  <input value="71" id="clno" /> <input type="button" value="Query CL in P4Label column" > </button>
 <div id="table_div"></div>
 
 <br/>
+
 <div id="one"></div>
 <div id="two"></div>
 <div id="three"></div>

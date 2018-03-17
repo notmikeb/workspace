@@ -52,12 +52,21 @@ class MSSQL(object):
         self.connect.commit()
         self.connect.close()
 
-def test(): ## ms = MSSQL(host="localhost",user="msp",pwd="123456",db="MSPDB_Debugging")
+def test( max = 3, cl = None): ## ms = MSSQL(host="localhost",user="msp",pwd="123456",db="MSPDB_Debugging")
         ## ms.ExecNonQuery("insert into WeiBoUser values('2','3')")
         ms = MSSQL(host="", user="msp", pwd="123456", db="MSPDB_Debugging")
         #resList = ms.ExecQuery("SELECT top 10 * FROM dbo.Task order by TaskID desc")
         #print(resList)
-        a = ms.query_db("select top 3 * from dbo.Task")
+        try: 
+            max = int(max)
+        except:
+            max = 3
+        if cl != None:
+            sqlstring = "select top {} * from dbo.Task where P4Label like '%{cl}%' order by TaskID desc".format(max, cl = cl)
+        else:
+            sqlstring = "select top {} * from dbo.Task order by TaskID desc".format(max)
+        print(sqlstring)
+        a = ms.query_db( sqlstring )
         import json
         data= json.dumps( a, default = dump_date, indent = 2)
         return data
