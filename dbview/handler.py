@@ -1,4 +1,3 @@
-
 import pymssql
 from datetime import datetime
 
@@ -8,6 +7,10 @@ def dump_date(thing):
         return thing.isoformat()
     return str(thing)
 
+    
+def getMs():
+    g_ms = MSSQL(host="", user="web", pwd="preflight", db="MSPDB")
+    return g_ms
 
 class MSSQL(object):
   def __init__(self,host,user,pwd,db):
@@ -53,7 +56,7 @@ class MSSQL(object):
         self.connect.close()
 
 def query_sqlstring(sqlstring):
-        ms = MSSQL(host="", user="msp", pwd="123456", db="MSPDB_Debugging")
+        ms = getMs()
         print(sqlstring)
         a = ms.query_db( sqlstring )
         import json
@@ -62,7 +65,7 @@ def query_sqlstring(sqlstring):
 
 def test( max = 3, cl = None): ## ms = MSSQL(host="localhost",user="msp",pwd="123456",db="MSPDB_Debugging")
         ## ms.ExecNonQuery("insert into WeiBoUser values('2','3')")
-        ms = MSSQL(host="", user="msp", pwd="123456", db="MSPDB_Debugging")
+        ms = getMs()
         try: 
             max = int(max)
         except:
@@ -75,7 +78,7 @@ def test( max = 3, cl = None): ## ms = MSSQL(host="localhost",user="msp",pwd="12
         a = ms.query_db( sqlstring )
         import json
         data= json.dumps( a, default = dump_date, indent = 2)
-        return data
+        return data        
         
 
 if __name__ == '__main__':
