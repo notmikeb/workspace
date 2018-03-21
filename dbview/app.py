@@ -45,8 +45,15 @@ def form_statistic20():
 @app.route('/statistic')
 def form_statistic():
     return form_statistic20()    
+
+@app.route('/templates/<f1>')
+def form_template_file(f1):
+    #f1 = request.args.get('file')
+    print(f1)
+    return render_template(f1)
     
 ## RestAPI    
+
 
 
 @app.route('/api/related', methods=['GET', 'POST'])

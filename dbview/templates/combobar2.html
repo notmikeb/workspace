@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['bar']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+		data = [ { 'Date': '2017-w1', 'project': 'p1_1',  'Count': 5}, 
+		{ 'Date': '2017-w2', 'project': 'p1_1', 'Count': 6},
+		{ 'Date': '2017-w1', 'project': 'p1_2' , 'Count': 3},
+	{ 'Date': '2017-w3', 'project': 'p1_2' , 'Count': 4},
+		{ 'Date': '2017-w2', 'project': 'p1_3' , 'Count': 2},
+			{ 'Date': '2017-w3', 'project': 'p1_3' , 'Count': 5},
+			
+		]
+		prjs = []
+		dates = []
+		data.forEach(
+			(d)=> {  if(prjs.indexOf(d['project']) >=0 ){
+			}else{
+			prjs.push(d['project']);
+			}
+			if(dates.indexOf(d['Date']) >=0 ){
+			}else{
+			dates.push(d['Date']);
+			}
+		}
+		);
+		prjs.sort();
+		dates.sort();
+		
+		
+		// Date V/projects>, 1_1, '1_2', '1_3'
+        // sort date		
+        newone = new Array( dates.length + 1)
+		for( i = 0 ; i < newone.length; i ++){
+			newone[i] = new Array( prjs.length +1 );
+			for( j = 0 ; j < newone[i].length ; j++ ){
+			newone[i][j] = 0;
+			if(j == 0 && i > 0){
+				newone[i][j] = dates[i-1];
+			}
+			}
+		}
+		
+		
+		headers = []
+		headers.push('Dates')
+		prjs.forEach( (p1) => { headers.push(p1) })
+		console.log( headers);
+		newone[0] = headers;
+		data.forEach( (d1) =>{
+		console.log(d1);
+				x = prjs.indexOf(d1['project'])+1
+				y = dates.indexOf(d1['Date'])+1
+				console.log( x, ' ' , y , ' ' , d1['Count']);
+				newone[y][x] = d1['Count'];
+			   }
+		
+		
+		       )
+		
+		console.log( newone );
+			   
+		var newone2 = [
+          ['Year', 'Sales', 'Expenses', 'Profit'],
+          ['2014', 1000, 400, 200],
+          ['2015', 1170, 460, 250],
+          ['2016', 660, 1120, 300],
+          ['2017', 1030, 540, 350]
+        ];
+		
+        var data = google.visualization.arrayToDataTable(newone);
+
+        var options = {
+          chart: {
+            title: 'Company Performance',
+            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+          }
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+      }
+    </script>
+  </head>
+  <body>
+    <div id="columnchart_material" style="width: 800px; height: 500px;"></div>
+  </body>
+</html>
