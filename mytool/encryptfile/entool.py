@@ -5,7 +5,8 @@ import base64
 
 ##key = Fernet.generate_key()
 
-def enfile( pwd, infilename, outfilename):
+def enfile(action, pwd, infilename, outfilename):
+  action = int(action)
   print("pwd ", pwd)
   pwd = pwd.encode('utf8') * 32
   pwd = pwd[0:32]
@@ -20,8 +21,8 @@ def enfile( pwd, infilename, outfilename):
   if len(key) != 44:
      raise Except("length is wrong")
   f = Fernet(key)
-  test(0, f, infilename, outfilename)
-  test(1, f, outfilename, 'test.txt')
+  test(action, f, infilename, outfilename)
+  test(action-1, f, outfilename, 'test.txt')
   return f 
 
 def test(action, f, infilename, outfilename):
@@ -47,4 +48,7 @@ def test(action, f, infilename, outfilename):
 
 if __name__ == "__main__":
   import sys
-  f = enfile( *sys.argv[1:] )
+  if len(sys.argv) < 4:
+      print("usage: {} 0/1 password input-file output-file")
+  else:
+      f = enfile( *sys.argv[1:] )
