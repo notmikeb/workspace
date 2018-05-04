@@ -3,6 +3,10 @@ import random
 import json
 import traceback
 
+from flask_appconfig import AppConfig
+from flask_bootstrap import Bootstrap
+
+
 import handler
 
 app = Flask(__name__)
@@ -138,5 +142,19 @@ def get_waiting():
     except:
         return json.dumps( [{ 'TaskID': 0, 'Platform' : 'error', 'ChipName' : 'error'}]) 
 
+from flask_nav import Nav
+from flask_nav.elements import *
+
+nav = Nav()
+nav.register_element('frontend_top', Navbar(
+  View('Home', '.form'),
+  View('Pre-test', '.form_statistic20'),
+  View('Post-test', '.form_statistic15'),
+  View('Table', '.form_tablehtm'),
+  Text('HelloWorld')))
+
 if __name__ == '__main__':
+  AppConfig(app)
+  Bootstrap(app)
+  nav.init_app(app)
   app.run(debug=True, port = 9000, host = "0.0.0.0")
