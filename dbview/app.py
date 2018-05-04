@@ -49,8 +49,15 @@ def form_statistic20():
 @app.route('/statistic')
 def form_statistic():
     return form_statistic20()    
+
+@app.route('/templates/<f1>')
+def form_template_file(f1):
+    #f1 = request.args.get('file')
+    print(f1)
+    return render_template(f1)
     
 ## RestAPI    
+
 
 
 @app.route('/api/related', methods=['GET', 'POST'])
@@ -60,20 +67,22 @@ def get_related():
     print("content is ", content)
     # {"ChipNames":"[\"MT6739\",\"MT7668\",\"MT6758\"]","Platforms":"[\"zion\",\"7668_mp2_1801\",\"gen35test\"]"}
     # sqlstring is 'ChipName' = 'MT6739' or 'ChipName' = 'MT7668' and Status != 'DONE'
-    cnlist = content['ChipNames']
-    pllist = content['Platforms']
-    maxtaskid = content['maxtaskid']
+    
+    
     try:
+        cnlist = content['ChipNames']
         cnlist = json.loads(cnlist)
     except:
         traceback.print_exc()
         cnlist = []
     try:
+        pllist = content['Platforms']
         pllist = json.loads(pllist)
     except:
         traceback.print_exc()    
         pllist = []
     try:
+        maxtaskid = content['maxtaskid']
         maxtaskid = int(maxtaskid)
     except:
         maxtaskid = 99999999
