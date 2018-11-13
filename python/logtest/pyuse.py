@@ -1,5 +1,6 @@
 import pylib2
 import pylib2.tool
+import pylib1.tool
 import logging
 
 import yaml
@@ -12,3 +13,4 @@ logging.config.fileConfig('logging.conf', disable_existing_loggers = False)
 pylib2.tool.show('hehe')
 logging.getLogger().error("root error")
 logging.getLogger().info("root info")
+pylib1.tool.sayHello('hehe')
