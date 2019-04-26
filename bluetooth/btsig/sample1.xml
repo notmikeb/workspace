@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <qdid>130773</qdid>
+  <project_name>tuv</project_name>
+  <pics>
+    <profile>
+      <name>HSP</name>
+      <item>
+        <table>2</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>2</table>
+        <row>15</row>
+      </item>
+    </profile>
+    <profile>
+      <name>1L2CAP</name>
+      <item>
+        <table>2</table>
+        <row>19</row>
+      </item>
+      <item>
+        <table>2</table>
+        <row>10</row>
+      </item>
+    </profile>
+    <profile>
+      <name>SDP</name>
+      <item>
+        <table>2</table>
+        <row>19</row>
+      </item>
+      <item>
+        <table>2</table>
+        <row>3</row>
+      </item>
+    </profile>
+  </pics>
+</project>
