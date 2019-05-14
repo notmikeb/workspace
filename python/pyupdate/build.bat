@@ -1,0 +1,1 @@
+c:\Python36\Scripts\pyinstaller.exe --onefile -y pyupdate.py
